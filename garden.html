@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Gift For You 🌸</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="petals" id="petals"></div>
+
+  <div class="garden-page">
+    <h2>A little something for you 🌸</h2>
+    <p class="subtitle">Click the envelope when you're ready ✉️</p>
+
+    <div class="scene">
+
+      <!-- FLOWER -->
+      <div class="flower-wrap">
+        <svg width="180" height="260" viewBox="0 0 180 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Stem -->
+          <path d="M90 260 Q85 200 90 160" stroke="#6abf69" stroke-width="6" stroke-linecap="round"/>
+          <!-- Leaf left -->
+          <path d="M88 210 Q60 195 55 175 Q75 178 88 200Z" fill="#81c784"/>
+          <!-- Leaf right -->
+          <path d="M92 190 Q120 175 125 155 Q105 162 92 182Z" fill="#81c784"/>
+
+          <!-- Petals (8 petals rotated) -->
+          <g transform="translate(90,100)">
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(0)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(45)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(90)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(135)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(180)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(225)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(270)"/>
+            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(315)"/>
+            <!-- Center -->
+            <circle cx="0" cy="0" r="20" fill="#ffd166"/>
+            <circle cx="0" cy="0" r="13" fill="#ffb347"/>
+            <!-- Center dots -->
+            <circle cx="-4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
+            <circle cx="4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
+            <circle cx="0" cy="4" r="2" fill="#e8638c" opacity="0.7"/>
+            <circle cx="-6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
+            <circle cx="6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- ENVELOPE -->
+      <a href="letter.html" class="envelope-wrap">
+        <div class="envelope">
+          <div class="env-body">
+            <div class="env-lines">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="env-flap"></div>
+          <div class="env-heart">💌</div>
+        </div>
+        <span>Open me ✨</span>
+      </a>
+
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('petals');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>

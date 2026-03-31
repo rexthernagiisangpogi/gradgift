@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Congratulations 🎓</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Falling petals -->
+  <div class="petals" id="petals"></div>
+
+  <div class="front-page">
+    <div class="card">
+      <span class="cap-emoji">🎓</span>
+      <h1>Congratulations,</h1>
+      <div class="name">Graduate ✨</div>
+      <div class="hearts">🌸 💕 🌸</div>
+      <p>You did it! All those late nights, all that hard work — it all led to this beautiful moment. I am so incredibly proud of you.</p>
+      <a href="garden.html" class="btn">Continue &rarr;</a>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('petals');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      p.style.width = (10 + Math.random() * 10) + 'px';
+      p.style.height = (14 + Math.random() * 12) + 'px';
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>

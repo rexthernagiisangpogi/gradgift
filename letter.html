@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Letter For You 💌</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="petals" id="petals"></div>
+
+  <div class="letter-page">
+    <div class="letter-card">
+      <span class="stamp">💌</span>
+
+      <div class="date">Written with love, just for you</div>
+
+      <h3>My Dearest,</h3>
+
+      <p>
+        Watching you walk across that stage today — or knowing that you did — filled my heart with a kind of pride I don't have words for. You worked so hard, you never gave up, and you made it. You actually made it. 🎓
+      </p>
+      <p>
+        I have been lucky enough to be by your side through some of it, and I want you to know: every single moment with you has been the best part of my days. You make ordinary things feel magical just by being in them.
+      </p>
+      <p>
+        You are brilliant, kind, funny, and so incredibly beautiful — inside and out. I admire you more than you know, and I fall a little more in love with you every single day.
+      </p>
+      <p>
+        This graduation is just the beginning of everything wonderful that is coming for you. And I hope — more than anything — that I get to be there for all of it.
+      </p>
+
+      <div class="signature">With all my love 🌸</div>
+
+      <!-- PROPOSAL -->
+      <div class="proposal-box">
+        <span class="ring">💍</span>
+        <h4>So… I have a question.</h4>
+        <p>You already have my heart. Would you do me the honor of being my girlfriend?</p>
+        <div class="answer-btns">
+          <button class="btn-yes" onclick="sayYes()">Yes! 💕</button>
+          <button class="btn-no" id="noBtn" onmouseover="runAway(this)" onclick="runAway(this)">Maybe later…</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YES OVERLAY -->
+  <div class="yes-overlay" id="yesOverlay">
+    <div class="big-heart">💖</div>
+    <h2>She said YES! 🎉</h2>
+    <p>This is the best day ever. I promise to make every day as special as today. I love you so much. 🌸</p>
+  </div>
+
+  <script>
+    // Petals
+    const container = document.getElementById('petals');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      container.appendChild(p);
+    }
+
+    // "No" button runs away
+    function runAway(btn) {
+      const maxX = window.innerWidth - 160;
+      const maxY = window.innerHeight - 60;
+      btn.style.position = 'fixed';
+      btn.style.left = Math.random() * maxX + 'px';
+      btn.style.top  = Math.random() * maxY + 'px';
+      btn.style.transition = 'left 0.3s, top 0.3s';
+      btn.style.zIndex = '50';
+    }
+
+    function sayYes() {
+      document.getElementById('yesOverlay').classList.add('show');
+    }
+  </script>
+</body>
+</html>
