@@ -6,205 +6,150 @@
   <title>Congratulations 🎓</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    body { background: #0a0010; overflow: hidden; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0010; overflow: hidden; width: 100vw; height: 100vh; }
 
-    canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
+    canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
 
-    /* ── CONGRATS TEXT ── */
-    #congrats-text {
+    /* Continue button + subtitle — hidden until after morph */
+    #ui {
       position: fixed;
       inset: 0;
       z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-
-    #congrats-text .word {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.6rem, 9vw, 6rem);
-      font-weight: 700;
-      letter-spacing: 6px;
-      color: #fff;
-      text-shadow:
-        0 0 20px #ff85a1,
-        0 0 40px #ff85a1,
-        0 0 80px #e8638c;
+      justify-content: flex-end;
+      padding-bottom: 14vh;
       opacity: 0;
-      transition: opacity 0.4s;
+      pointer-events: none;
+      transition: opacity 1.2s ease;
     }
+    #ui.show { opacity: 1; pointer-events: all; }
 
-    #congrats-text .sub {
+    #ui .sub {
       font-family: 'Playfair Display', serif;
       font-style: italic;
-      font-size: clamp(1.2rem, 3.5vw, 2rem);
+      font-size: clamp(1rem, 3vw, 1.5rem);
       color: #ffd6e8;
       text-shadow: 0 0 16px #ff85a1;
-      margin-top: 12px;
-      opacity: 0;
-      transition: opacity 0.6s;
       letter-spacing: 3px;
-    }
-
-    /* letter-by-letter spans */
-    .letter {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(30px) scale(0.6);
-      transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .letter.show {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    /* ── CARD OVERLAY ── */
-    #card-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 30px 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 1s ease;
-    }
-    #card-overlay.show {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    #card-overlay .card {
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(18px);
-      border: 2px solid #f2c4d8;
-      border-radius: 32px;
-      padding: 48px 44px;
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(249,168,201,0.4), 0 0 40px rgba(232,99,140,0.2);
-    }
-
-    #card-overlay .cap { font-size: 3.5rem; display: block; margin-bottom: 10px; animation: capBounce 1.8s ease-in-out infinite; }
-    @keyframes capBounce {
-      0%,100% { transform: translateY(0) rotate(-5deg); }
-      50%      { transform: translateY(-12px) rotate(5deg); }
-    }
-
-    #card-overlay h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.4rem, 4vw, 2rem);
-      color: #e8638c;
-      margin-bottom: 6px;
-    }
-    #card-overlay .grad-name {
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: clamp(1.1rem, 3vw, 1.5rem);
-      color: #d4a853;
-      margin-bottom: 18px;
-    }
-    #card-overlay p {
-      font-size: 0.95rem;
-      color: #9a6a7a;
-      line-height: 1.7;
-      margin-bottom: 28px;
-    }
-
-    /* QR */
-    .qr-wrap {
-      margin-top: 20px;
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-    }
-    .qr-wrap p { font-size: 0.78rem; color: #b07a90; font-style: italic; margin-bottom: 0; }
-    .qr-wrap img {
-      border-radius: 12px;
-      border: 2px solid #f9c8d8;
-      box-shadow: 0 4px 16px rgba(249,168,201,0.3);
-      padding: 8px;
-      background: #fff;
+      margin-bottom: 32px;
+      animation: fadeSlideUp 0.8s ease both;
     }
   </style>
 </head>
 <body>
 
-  <canvas id="fireworks"></canvas>
+  <canvas id="c"></canvas>
 
-  <!-- Step 1: Congratulations text -->
-  <div id="congrats-text">
-    <div class="word" id="mainWord"></div>
-    <div class="sub" id="subWord">Graduate ✨</div>
-  </div>
-
-  <!-- Step 2: Card -->
-  <div id="card-overlay">
-    <div class="card">
-      <span class="cap">🎓</span>
-      <h2>You did it!</h2>
-      <div class="grad-name">My favorite Graduate 🌸</div>
-      <p id="typeText"></p>
-      <a href="garden.html" class="btn">Open your gift &rarr;</a>
-      <div class="qr-wrap">
-        <p>📱 Scan to open on your phone</p>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&color=e8638c&bgcolor=ffffff&data=https://rexthernagiisangpogi.github.io/gradgift/" alt="QR Code" width="130" height="130" />
-      </div>
-    </div>
+  <div id="ui">
+    <div class="sub">Graduate ✨</div>
+    <a href="garden.html" class="btn">Open your gift &rarr;</a>
   </div>
 
   <script>
-  // ══════════════════════════════
-  //  FIREWORKS ENGINE
-  // ══════════════════════════════
-  const canvas = document.getElementById('fireworks');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const canvas = document.getElementById('c');
+  const ctx    = canvas.getContext('2d');
+
+  let W = canvas.width  = window.innerWidth;
+  let H = canvas.height = window.innerHeight;
   window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildTargets();
   });
 
-  const colors = [
-    '#ff85a1','#ffd166','#ff6b9d','#c9b1ff',
-    '#a8e6cf','#ffb3c6','#fff','#ffc8dd','#e8638c'
-  ];
+  // ── COLORS ──
+  const COLORS = ['#ff85a1','#ffd166','#ffffff','#c9b1ff','#a8e6cf','#ffb3c6','#ff6b9d','#ffc8dd'];
 
+  // ══════════════════════════════
+  //  STEP 1 — sample letter pixel positions from canvas text
+  // ══════════════════════════════
+  let targets = [];
+
+  function buildTargets() {
+    // Draw text to an offscreen canvas to sample pixel positions
+    const off = document.createElement('canvas');
+    off.width  = W;
+    off.height = H;
+    const octx = off.getContext('2d');
+
+    const fontSize = Math.min(W / 7, 90);
+    octx.font = `700 ${fontSize}px 'Playfair Display', serif`;
+    octx.fillStyle = '#fff';
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillText('Congratulations', W / 2, H / 2);
+
+    const data = octx.getImageData(0, 0, W, H).data;
+    const gap  = Math.max(4, Math.floor(W / 160)); // sample every N pixels
+    targets = [];
+    for (let y = 0; y < H; y += gap) {
+      for (let x = 0; x < W; x += gap) {
+        const idx = (y * W + x) * 4;
+        if (data[idx + 3] > 128) {
+          targets.push({ x, y });
+        }
+      }
+    }
+    // shuffle so particles fly from random burst positions to random letter pixels
+    targets.sort(() => Math.random() - 0.5);
+  }
+
+  buildTargets();
+
+  // ══════════════════════════════
+  //  PARTICLE CLASS
+  // ══════════════════════════════
   class Particle {
-    constructor(x, y, color) {
-      this.x = x; this.y = y; this.color = color;
+    constructor(x, y, color, target) {
+      // start at burst origin
+      this.x  = x;
+      this.y  = y;
+      this.color  = color;
+      this.target = target; // {x, y} letter pixel
+
+      // random burst velocity
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 5;
+      const speed = 3 + Math.random() * 8;
       this.vx = Math.cos(angle) * speed;
       this.vy = Math.sin(angle) * speed;
-      this.alpha = 1;
-      this.decay = 0.012 + Math.random() * 0.015;
-      this.radius = 2 + Math.random() * 3;
-      this.gravity = 0.08;
+
+      this.alpha   = 1;
+      this.radius  = 2 + Math.random() * 2.5;
+      this.phase   = 'burst';   // 'burst' → 'morph' → 'hold'
+      this.morphT  = 0;         // 0→1 lerp progress
     }
-    update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      this.vy += this.gravity;
-      this.vx *= 0.98;
-      this.alpha -= this.decay;
+
+    update(morphing) {
+      if (this.phase === 'burst') {
+        this.x  += this.vx;
+        this.y  += this.vy;
+        this.vy += 0.12;        // gravity
+        this.vx *= 0.97;
+        this.alpha -= 0.008;
+        if (morphing) {
+          this.phase = 'morph';
+          this.alpha = 1;
+          // snapshot current position as morph start
+          this.sx = this.x;
+          this.sy = this.y;
+        }
+      } else if (this.phase === 'morph') {
+        this.morphT += 0.022;   // speed of morph
+        const t = easeOutExpo(Math.min(this.morphT, 1));
+        this.x = lerp(this.sx, this.target.x, t);
+        this.y = lerp(this.sy, this.target.y, t);
+        if (this.morphT >= 1) this.phase = 'hold';
+      }
     }
+
     draw() {
       ctx.save();
       ctx.globalAlpha = Math.max(0, this.alpha);
-      ctx.fillStyle = this.color;
-      ctx.shadowBlur = 8;
+      ctx.fillStyle   = this.color;
+      ctx.shadowBlur  = this.phase === 'hold' ? 6 : 10;
       ctx.shadowColor = this.color;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -213,106 +158,100 @@
     }
   }
 
-  class Trail {
-    constructor(x, targetY, color) {
-      this.x = x; this.y = canvas.height;
-      this.targetY = targetY; this.color = color;
-      this.speed = 12 + Math.random() * 6;
-      this.done = false;
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+
+  // ══════════════════════════════
+  //  ROCKET / TRAIL
+  // ══════════════════════════════
+  class Rocket {
+    constructor() {
+      this.x = W * (0.2 + Math.random() * 0.6);
+      this.y = H;
+      this.ty = H * (0.25 + Math.random() * 0.3);
+      this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      this.speed = 14 + Math.random() * 8;
+      this.done  = false;
     }
-    update() { this.y -= this.speed; if (this.y <= this.targetY) this.done = true; }
+    update() {
+      this.y -= this.speed;
+      if (this.y <= this.ty) this.done = true;
+    }
     draw() {
       ctx.save();
-      ctx.fillStyle = this.color;
-      ctx.shadowBlur = 10;
+      ctx.fillStyle  = this.color;
+      ctx.shadowBlur = 12;
       ctx.shadowColor = this.color;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+      ctx.arc(this.x, this.y, 3.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
   }
 
-  let particles = [], trails = [];
+  // ══════════════════════════════
+  //  STATE
+  // ══════════════════════════════
+  let rockets    = [];
+  let particles  = [];
+  let morphing   = false;
+  let done       = false;
+  let burstCount = 0;
 
-  function explode(x, y) {
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const count = 80 + Math.floor(Math.random() * 60);
-    for (let i = 0; i < count; i++) particles.push(new Particle(x, y, color));
-  }
+  // launch rockets every 350ms for 2.8s
+  const rocketTimer = setInterval(() => {
+    rockets.push(new Rocket());
+  }, 350);
 
-  function launchRocket() {
-    const x = canvas.width * (0.15 + Math.random() * 0.7);
-    const y = canvas.height * (0.1 + Math.random() * 0.4);
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const t = new Trail(x, y, color);
-    trails.push(t);
-    const check = setInterval(() => {
-      if (t.done) { explode(t.x, t.targetY); clearInterval(check); }
-    }, 16);
-  }
+  // after 2.8s — do one big central burst then morph
+  setTimeout(() => {
+    clearInterval(rocketTimer);
 
-  function animate() {
-    ctx.fillStyle = 'rgba(10,0,16,0.18)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    trails.forEach(t => { t.update(); t.draw(); });
-    trails = trails.filter(t => !t.done);
-    particles.forEach(p => { p.update(); p.draw(); });
-    particles = particles.filter(p => p.alpha > 0);
-    requestAnimationFrame(animate);
-  }
-  animate();
+    // spawn exactly as many particles as targets
+    const bx = W / 2;
+    const by = H * 0.38;
+    const count = Math.min(targets.length, 1200);
+
+    // trim targets to count
+    const usedTargets = targets.slice(0, count);
+
+    for (let i = 0; i < count; i++) {
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      particles.push(new Particle(bx, by, color, usedTargets[i]));
+    }
+
+    // let burst play for 0.9s then start morphing
+    setTimeout(() => { morphing = true; }, 900);
+
+    // show UI after morph completes (~3s after morph starts)
+    setTimeout(() => {
+      done = true;
+      document.getElementById('ui').classList.add('show');
+    }, 900 + 2800);
+
+  }, 2800);
 
   // ══════════════════════════════
-  //  SEQUENCE
+  //  RENDER LOOP
   // ══════════════════════════════
-  // Phase 1: fireworks for 2.5s
-  let rocketInterval = setInterval(launchRocket, 320);
+  function loop() {
+    // dark trail fade
+    ctx.fillStyle = done ? 'rgba(10,0,16,0.35)' : 'rgba(10,0,16,0.22)';
+    ctx.fillRect(0, 0, W, H);
 
-  // Phase 2: at 2.5s — show "Congratulations" letter by letter
-  setTimeout(() => {
-    const word = document.getElementById('mainWord');
-    const text = 'Congratulations';
-    word.style.opacity = '1';
-    text.split('').forEach((ch, i) => {
-      const span = document.createElement('span');
-      span.className = 'letter';
-      span.textContent = ch;
-      word.appendChild(span);
-      setTimeout(() => span.classList.add('show'), i * 80);
-    });
+    // rockets
+    rockets.forEach(r => { r.update(); r.draw(); });
+    rockets = rockets.filter(r => !r.done);
 
-    // show subtitle after letters done
-    setTimeout(() => {
-      document.getElementById('subWord').style.opacity = '1';
-    }, text.length * 80 + 200);
+    // particles
+    particles.forEach(p => p.update(morphing));
+    particles.forEach(p => p.draw());
+    // only remove burst particles that faded; keep morph/hold ones
+    particles = particles.filter(p => p.phase !== 'burst' || p.alpha > 0);
 
-    // keep fireworks going during text reveal
-  }, 2500);
-
-  // Phase 3: at 5.5s — fade out text, show card
-  setTimeout(() => {
-    clearInterval(rocketInterval);
-    // slow down fireworks
-    document.getElementById('congrats-text').style.transition = 'opacity 1s';
-    document.getElementById('congrats-text').style.opacity = '0';
-
-    setTimeout(() => {
-      document.body.style.background = '#fff9f5';
-      canvas.style.transition = 'opacity 1s';
-      canvas.style.opacity = '0';
-      document.getElementById('card-overlay').classList.add('show');
-
-      // typewriter
-      const msg = "You did it! All those late nights, all that hard work — it all led to this beautiful moment. I am so incredibly proud of you. 🌸";
-      const el = document.getElementById('typeText');
-      let i = 0;
-      function type() {
-        if (i < msg.length) { el.textContent += msg[i++]; setTimeout(type, 25); }
-      }
-      setTimeout(type, 400);
-    }, 800);
-  }, 5500);
+    requestAnimationFrame(loop);
+  }
+  loop();
   </script>
 </body>
 </html>
