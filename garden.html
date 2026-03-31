@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A Gift For You 🌸</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .bouquet-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: sway 4s ease-in-out infinite;
+      transform-origin: bottom center;
+      position: relative;
+    }
+    .bouquet-wrap svg {
+      filter: drop-shadow(0 10px 28px rgba(249,168,201,0.5));
+    }
+
+    /* smaller envelope */
+    .envelope {
+      width: 100px !important;
+      height: 70px !important;
+    }
+    .env-flap { height: 38px !important; }
+    .env-heart { font-size: 1.3rem !important; }
+    .envelope-wrap span { font-size: 0.85rem !important; }
+  </style>
 </head>
 <body>
 
@@ -16,39 +38,136 @@
 
     <div class="scene">
 
-      <!-- FLOWER -->
-      <div class="flower-wrap">
+      <!-- BOUQUET -->
+      <div class="bouquet-wrap">
         <div class="flower-container" id="flowerContainer">
-          <svg width="180" height="260" viewBox="0 0 180 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Stem -->
-            <path d="M90 260 Q85 200 90 160" stroke="#6abf69" stroke-width="6" stroke-linecap="round"/>
-            <!-- Leaves -->
-            <path d="M88 210 Q60 195 55 175 Q75 178 88 200Z" fill="#81c784"/>
-            <path d="M92 190 Q120 175 125 155 Q105 162 92 182Z" fill="#81c784"/>
-            <!-- Petals -->
-            <g class="petal-group" transform="translate(90,100)">
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(0)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(45)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(90)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(135)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(180)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(225)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(270)"/>
-              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(315)"/>
-              <!-- Center -->
-              <circle cx="0" cy="0" r="20" fill="#ffd166"/>
-              <circle cx="0" cy="0" r="13" fill="#ffb347"/>
-              <circle cx="-4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
-              <circle cx="4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
-              <circle cx="0" cy="4" r="2" fill="#e8638c" opacity="0.7"/>
-              <circle cx="-6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
-              <circle cx="6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
+          <svg width="320" height="340" viewBox="0 0 320 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+            <!-- ── STEMS ── -->
+            <!-- center stem -->
+            <path d="M160 340 Q158 280 160 220" stroke="#5a9e50" stroke-width="5" stroke-linecap="round"/>
+            <!-- left stem -->
+            <path d="M160 330 Q130 290 100 230" stroke="#6abf69" stroke-width="4" stroke-linecap="round"/>
+            <!-- right stem -->
+            <path d="M160 330 Q190 290 220 230" stroke="#6abf69" stroke-width="4" stroke-linecap="round"/>
+            <!-- far left stem -->
+            <path d="M158 325 Q118 295 75 240" stroke="#81c784" stroke-width="3.5" stroke-linecap="round"/>
+            <!-- far right stem -->
+            <path d="M162 325 Q202 295 245 240" stroke="#81c784" stroke-width="3.5" stroke-linecap="round"/>
+
+            <!-- ── LEAVES ── -->
+            <path d="M145 295 Q118 278 112 258 Q132 264 145 282Z" fill="#81c784"/>
+            <path d="M175 285 Q202 268 208 248 Q188 254 175 272Z" fill="#81c784"/>
+            <path d="M135 310 Q108 300 100 282 Q120 286 135 300Z" fill="#66bb6a"/>
+            <path d="M185 305 Q212 295 220 277 Q200 281 185 295Z" fill="#66bb6a"/>
+
+            <!-- ── RIBBON / WRAP ── -->
+            <path d="M120 320 Q160 308 200 320 Q195 335 160 338 Q125 335 120 320Z" fill="#ffb3c6" opacity="0.9"/>
+            <path d="M130 318 Q160 310 190 318" stroke="#e8638c" stroke-width="1.5" fill="none" opacity="0.6"/>
+
+            <!-- ══ FLOWER 1 — center: pink rose ══ -->
+            <g transform="translate(160,210)">
+              <!-- outer petals -->
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff85a1" opacity="0.9" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff6b9d" opacity="0.85" transform="rotate(51)"/>
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff85a1" opacity="0.9" transform="rotate(102)"/>
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff6b9d" opacity="0.85" transform="rotate(153)"/>
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff85a1" opacity="0.9" transform="rotate(204)"/>
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff6b9d" opacity="0.85" transform="rotate(255)"/>
+              <ellipse cx="0" cy="-30" rx="13" ry="22" fill="#ff85a1" opacity="0.9" transform="rotate(306)"/>
+              <!-- inner petals -->
+              <ellipse cx="0" cy="-18" rx="9" ry="14" fill="#ffb3c6" opacity="0.95" transform="rotate(25)"/>
+              <ellipse cx="0" cy="-18" rx="9" ry="14" fill="#ffb3c6" opacity="0.95" transform="rotate(97)"/>
+              <ellipse cx="0" cy="-18" rx="9" ry="14" fill="#ffb3c6" opacity="0.95" transform="rotate(169)"/>
+              <ellipse cx="0" cy="-18" rx="9" ry="14" fill="#ffb3c6" opacity="0.95" transform="rotate(241)"/>
+              <ellipse cx="0" cy="-18" rx="9" ry="14" fill="#ffb3c6" opacity="0.95" transform="rotate(313)"/>
+              <!-- center -->
+              <circle cx="0" cy="0" r="14" fill="#ffd166"/>
+              <circle cx="0" cy="0" r="9"  fill="#ffb347"/>
+              <circle cx="-3" cy="-3" r="1.8" fill="#e8638c" opacity="0.8"/>
+              <circle cx="3"  cy="-3" r="1.8" fill="#e8638c" opacity="0.8"/>
+              <circle cx="0"  cy="3"  r="1.8" fill="#e8638c" opacity="0.8"/>
             </g>
+
+            <!-- ══ FLOWER 2 — left: purple lavender/daisy ══ -->
+            <g transform="translate(100,222)">
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#c9b1ff" opacity="0.9" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#b39ddb" opacity="0.85" transform="rotate(40)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#c9b1ff" opacity="0.9" transform="rotate(80)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#b39ddb" opacity="0.85" transform="rotate(120)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#c9b1ff" opacity="0.9" transform="rotate(160)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#b39ddb" opacity="0.85" transform="rotate(200)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#c9b1ff" opacity="0.9" transform="rotate(240)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#b39ddb" opacity="0.85" transform="rotate(280)"/>
+              <ellipse cx="0" cy="-24" rx="8" ry="18" fill="#c9b1ff" opacity="0.9" transform="rotate(320)"/>
+              <circle cx="0" cy="0" r="11" fill="#ffd166"/>
+              <circle cx="0" cy="0" r="7"  fill="#ffb347"/>
+            </g>
+
+            <!-- ══ FLOWER 3 — right: yellow sunflower ══ -->
+            <g transform="translate(220,222)">
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffd166" opacity="0.95" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffb347" opacity="0.9"  transform="rotate(45)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffd166" opacity="0.95" transform="rotate(90)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffb347" opacity="0.9"  transform="rotate(135)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffd166" opacity="0.95" transform="rotate(180)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffb347" opacity="0.9"  transform="rotate(225)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffd166" opacity="0.95" transform="rotate(270)"/>
+              <ellipse cx="0" cy="-26" rx="9" ry="20" fill="#ffb347" opacity="0.9"  transform="rotate(315)"/>
+              <circle cx="0" cy="0" r="14" fill="#7b4f00"/>
+              <circle cx="0" cy="0" r="9"  fill="#5d3a00"/>
+              <circle cx="-3" cy="-3" r="1.5" fill="#a0522d" opacity="0.8"/>
+              <circle cx="3"  cy="-3" r="1.5" fill="#a0522d" opacity="0.8"/>
+              <circle cx="0"  cy="3"  r="1.5" fill="#a0522d" opacity="0.8"/>
+            </g>
+
+            <!-- ══ FLOWER 4 — far left: white tulip ══ -->
+            <g transform="translate(75,232)">
+              <!-- tulip petals -->
+              <path d="M0,-30 Q-14,-20 -12,0 Q0,8 12,0 Q14,-20 0,-30Z" fill="#fff0f6" opacity="0.95"/>
+              <path d="M0,-30 Q-18,-15 -16,5 Q-8,12 0,8 Q-4,-5 0,-30Z" fill="#ffd6e8" opacity="0.85"/>
+              <path d="M0,-30 Q18,-15 16,5 Q8,12 0,8 Q4,-5 0,-30Z"  fill="#ffd6e8" opacity="0.85"/>
+              <path d="M0,-28 Q-10,-10 -8,4 Q0,10 8,4 Q10,-10 0,-28Z" fill="#ffb3c6" opacity="0.7"/>
+              <!-- stem detail -->
+              <line x1="0" y1="8" x2="0" y2="18" stroke="#6abf69" stroke-width="3"/>
+            </g>
+
+            <!-- ══ FLOWER 5 — far right: red poppy ══ -->
+            <g transform="translate(245,232)">
+              <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#ff4757" opacity="0.9" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#ff6b81" opacity="0.85" transform="rotate(90)"/>
+              <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#ff4757" opacity="0.9" transform="rotate(180)"/>
+              <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#ff6b81" opacity="0.85" transform="rotate(270)"/>
+              <circle cx="0" cy="0" r="10" fill="#2d2d2d"/>
+              <circle cx="0" cy="0" r="6"  fill="#1a1a1a"/>
+              <circle cx="-2" cy="-2" r="1.2" fill="#555" opacity="0.8"/>
+              <circle cx="2"  cy="-2" r="1.2" fill="#555" opacity="0.8"/>
+              <circle cx="0"  cy="2"  r="1.2" fill="#555" opacity="0.8"/>
+            </g>
+
+            <!-- ══ FLOWER 6 — small accent: pink baby's breath left ══ -->
+            <g transform="translate(128,198)">
+              <circle cx="0"   cy="0"  r="6" fill="#ffb3c6" opacity="0.9"/>
+              <circle cx="-10" cy="-5" r="5" fill="#ffc8dd" opacity="0.85"/>
+              <circle cx="10"  cy="-5" r="5" fill="#ffb3c6" opacity="0.85"/>
+              <circle cx="-5"  cy="8"  r="4" fill="#ffd6e8" opacity="0.8"/>
+              <circle cx="5"   cy="8"  r="4" fill="#ffc8dd" opacity="0.8"/>
+            </g>
+
+            <!-- ══ FLOWER 7 — small accent: lavender right ══ -->
+            <g transform="translate(192,198)">
+              <circle cx="0"   cy="0"  r="6" fill="#e1bee7" opacity="0.9"/>
+              <circle cx="-10" cy="-5" r="5" fill="#ce93d8" opacity="0.85"/>
+              <circle cx="10"  cy="-5" r="5" fill="#e1bee7" opacity="0.85"/>
+              <circle cx="-5"  cy="8"  r="4" fill="#f3e5f5" opacity="0.8"/>
+              <circle cx="5"   cy="8"  r="4" fill="#ce93d8" opacity="0.8"/>
+            </g>
+
           </svg>
         </div>
       </div>
 
-      <!-- ENVELOPE -->
+      <!-- ENVELOPE (smaller via CSS override above) -->
       <a href="letter.html" class="envelope-wrap">
         <div class="envelope">
           <div class="env-body">
@@ -66,7 +185,6 @@
   </div>
 
   <script>
-    // Petals
     const petalContainer = document.getElementById('petals');
     for (let i = 0; i < 24; i++) {
       const p = document.createElement('div');
@@ -79,12 +197,11 @@
       petalContainer.appendChild(p);
     }
 
-    // Sparkles
-    const sparkles = ['✨','💫','🌟','✦'];
+    const sparkleEmojis = ['✨','💫','🌟','✦'];
     for (let i = 0; i < 16; i++) {
       const s = document.createElement('div');
       s.className = 'sparkle';
-      s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+      s.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
       s.style.left = Math.random() * 100 + 'vw';
       s.style.top = (10 + Math.random() * 80) + 'vh';
       s.style.animationDuration = (3 + Math.random() * 5) + 's';
@@ -92,15 +209,14 @@
       document.body.appendChild(s);
     }
 
-    // Floating hearts around flower
     const fc = document.getElementById('flowerContainer');
     const heartEmojis = ['💕','💗','💖','🌸','💓'];
     function spawnHeart() {
       const h = document.createElement('div');
       h.className = 'float-heart';
       h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-      h.style.left = (20 + Math.random() * 140) + 'px';
-      h.style.bottom = (60 + Math.random() * 80) + 'px';
+      h.style.left = (20 + Math.random() * 280) + 'px';
+      h.style.bottom = (60 + Math.random() * 100) + 'px';
       h.style.animationDuration = (2 + Math.random() * 2) + 's';
       h.style.animationDelay = '0s';
       fc.appendChild(h);
