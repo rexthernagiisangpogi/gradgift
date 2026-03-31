@@ -8,25 +8,17 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0a0010; overflow: hidden; width: 100vw; height: 100vh; }
-
     canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
 
-    /* Continue button + subtitle — hidden until after morph */
     #ui {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
+      position: fixed; inset: 0; z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
       padding-bottom: 14vh;
-      opacity: 0;
-      pointer-events: none;
+      opacity: 0; pointer-events: none;
       transition: opacity 1.2s ease;
     }
     #ui.show { opacity: 1; pointer-events: all; }
-
     #ui .sub {
       font-family: 'Playfair Display', serif;
       font-style: italic;
@@ -35,7 +27,6 @@
       text-shadow: 0 0 16px #ff85a1;
       letter-spacing: 3px;
       margin-bottom: 32px;
-      animation: fadeSlideUp 0.8s ease both;
     }
   </style>
 </head>
@@ -60,96 +51,67 @@
     buildTargets();
   });
 
-  // ── COLORS ──
   const COLORS = ['#ff85a1','#ffd166','#ffffff','#c9b1ff','#a8e6cf','#ffb3c6','#ff6b9d','#ffc8dd'];
 
-  // ══════════════════════════════
-  //  STEP 1 — sample letter pixel positions from canvas text
-  // ══════════════════════════════
+  // ── TARGETS (letter pixel positions) ──
   let targets = [];
-
   function buildTargets() {
-    // Draw text to an offscreen canvas to sample pixel positions
     const off = document.createElement('canvas');
-    off.width  = W;
-    off.height = H;
+    off.width = W; off.height = H;
     const octx = off.getContext('2d');
-
     const fontSize = Math.min(W / 7, 90);
     octx.font = `700 ${fontSize}px 'Playfair Display', serif`;
     octx.fillStyle = '#fff';
     octx.textAlign = 'center';
     octx.textBaseline = 'middle';
     octx.fillText('Congratulations', W / 2, H / 2);
-
     const data = octx.getImageData(0, 0, W, H).data;
-    const gap  = Math.max(4, Math.floor(W / 160)); // sample every N pixels
+    const gap = Math.max(4, Math.floor(W / 160));
     targets = [];
-    for (let y = 0; y < H; y += gap) {
-      for (let x = 0; x < W; x += gap) {
-        const idx = (y * W + x) * 4;
-        if (data[idx + 3] > 128) {
-          targets.push({ x, y });
-        }
-      }
-    }
-    // shuffle so particles fly from random burst positions to random letter pixels
+    for (let y = 0; y < H; y += gap)
+      for (let x = 0; x < W; x += gap)
+        if (data[(y * W + x) * 4 + 3] > 128) targets.push({ x, y });
     targets.sort(() => Math.random() - 0.5);
   }
-
   buildTargets();
 
-  // ══════════════════════════════
-  //  PARTICLE CLASS
-  // ══════════════════════════════
+  // ── HELPERS ──
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+
+  // ── FIREWORK PARTICLE ──
   class Particle {
     constructor(x, y, color, target) {
-      // start at burst origin
-      this.x  = x;
-      this.y  = y;
-      this.color  = color;
-      this.target = target; // {x, y} letter pixel
-
-      // random burst velocity
+      this.x = x; this.y = y;
+      this.color = color; this.target = target;
       const angle = Math.random() * Math.PI * 2;
       const speed = 3 + Math.random() * 8;
       this.vx = Math.cos(angle) * speed;
       this.vy = Math.sin(angle) * speed;
-
-      this.alpha   = 1;
-      this.radius  = 2 + Math.random() * 2.5;
-      this.phase   = 'burst';   // 'burst' → 'morph' → 'hold'
-      this.morphT  = 0;         // 0→1 lerp progress
+      this.alpha = 1;
+      this.radius = 2 + Math.random() * 2.5;
+      this.phase = 'burst';
+      this.morphT = 0;
     }
-
     update(morphing) {
       if (this.phase === 'burst') {
-        this.x  += this.vx;
-        this.y  += this.vy;
-        this.vy += 0.12;        // gravity
-        this.vx *= 0.97;
+        this.x += this.vx; this.y += this.vy;
+        this.vy += 0.12; this.vx *= 0.97;
         this.alpha -= 0.008;
-        if (morphing) {
-          this.phase = 'morph';
-          this.alpha = 1;
-          // snapshot current position as morph start
-          this.sx = this.x;
-          this.sy = this.y;
-        }
+        if (morphing) { this.phase = 'morph'; this.alpha = 1; this.sx = this.x; this.sy = this.y; }
       } else if (this.phase === 'morph') {
-        this.morphT += 0.022;   // speed of morph
+        this.morphT += 0.022;
         const t = easeOutExpo(Math.min(this.morphT, 1));
         this.x = lerp(this.sx, this.target.x, t);
         this.y = lerp(this.sy, this.target.y, t);
         if (this.morphT >= 1) this.phase = 'hold';
       }
     }
-
     draw() {
       ctx.save();
       ctx.globalAlpha = Math.max(0, this.alpha);
-      ctx.fillStyle   = this.color;
-      ctx.shadowBlur  = this.phase === 'hold' ? 6 : 10;
+      ctx.fillStyle = this.color;
+      ctx.shadowBlur = this.phase === 'hold' ? 6 : 10;
       ctx.shadowColor = this.color;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -158,12 +120,84 @@
     }
   }
 
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+  // ── SPARKLE ──
+  class Sparkle {
+    constructor(cx, cy) {
+      this.x  = cx + (Math.random() - 0.5) * 320;
+      this.y  = cy + (Math.random() - 0.5) * 120;
+      this.vx = (Math.random() - 0.5) * 3;
+      this.vy = -1 - Math.random() * 3;
+      this.life    = 60 + Math.random() * 40;
+      this.maxLife = this.life;
+      this.alpha   = 1;
+      this.size    = 1.5 + Math.random() * 3;
+      this.color   = COLORS[Math.floor(Math.random() * COLORS.length)];
+      this.rot     = Math.random() * Math.PI;
+      this.rotSpd  = (Math.random() - 0.5) * 0.15;
+    }
+    step() {
+      this.x += this.vx; this.y += this.vy;
+      this.vy += 0.04; this.rot += this.rotSpd;
+      this.life--;
+      this.alpha = this.life / this.maxLife;
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, this.alpha);
+      ctx.fillStyle   = this.color;
+      ctx.shadowBlur  = 8; ctx.shadowColor = this.color;
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2;
+        const ox = Math.cos(a) * this.size * 2.5;
+        const oy = Math.sin(a) * this.size * 2.5;
+        i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
+        ctx.lineTo(Math.cos(a + Math.PI / 4) * this.size * 0.8,
+                   Math.sin(a + Math.PI / 4) * this.size * 0.8);
+      }
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+  }
 
-  // ══════════════════════════════
-  //  ROCKET / TRAIL
-  // ══════════════════════════════
+  // ── HEART ──
+  class Heart {
+    constructor(cx, cy) {
+      this.x  = cx + (Math.random() - 0.5) * 320;
+      this.y  = cy + (Math.random() - 0.5) * 100;
+      this.vx = (Math.random() - 0.5) * 2.5;
+      this.vy = -1.5 - Math.random() * 3.5;
+      this.life    = 70 + Math.random() * 50;
+      this.maxLife = this.life;
+      this.alpha   = 1;
+      this.size    = 4 + Math.random() * 7;
+      this.color   = ['#ff85a1','#ff6b9d','#ffc8dd','#e8638c','#ffb3c6'][Math.floor(Math.random() * 5)];
+    }
+    step() {
+      this.x += this.vx; this.y += this.vy;
+      this.vy += 0.05; this.vx *= 0.99;
+      this.life--;
+      this.alpha = this.life / this.maxLife;
+    }
+    draw() {
+      const s = this.size;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, this.alpha);
+      ctx.fillStyle   = this.color;
+      ctx.shadowBlur  = 10; ctx.shadowColor = this.color;
+      ctx.translate(this.x, this.y);
+      ctx.beginPath();
+      ctx.moveTo(0, s * 0.3);
+      ctx.bezierCurveTo(-s, -s * 0.3, -s * 1.6,  s * 0.8, 0, s * 1.6);
+      ctx.bezierCurveTo( s * 1.6,  s * 0.8,  s, -s * 0.3, 0, s * 0.3);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // ── ROCKET ──
   class Rocket {
     constructor() {
       this.x = W * (0.2 + Math.random() * 0.6);
@@ -173,81 +207,72 @@
       this.speed = 14 + Math.random() * 8;
       this.done  = false;
     }
-    update() {
-      this.y -= this.speed;
-      if (this.y <= this.ty) this.done = true;
-    }
+    update() { this.y -= this.speed; if (this.y <= this.ty) this.done = true; }
     draw() {
       ctx.save();
-      ctx.fillStyle  = this.color;
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, 3.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillStyle = this.color; ctx.shadowBlur = 12; ctx.shadowColor = this.color;
+      ctx.beginPath(); ctx.arc(this.x, this.y, 3.5, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
   }
 
-  // ══════════════════════════════
-  //  STATE
-  // ══════════════════════════════
-  let rockets    = [];
-  let particles  = [];
-  let morphing   = false;
-  let done       = false;
-  let burstCount = 0;
+  // ── STATE ──
+  let rockets = [], particles = [], sparkles = [], hearts = [];
+  let morphing = false, done = false;
+  let spawnInterval = null;
 
-  // launch rockets every 350ms for 2.8s
-  const rocketTimer = setInterval(() => {
-    rockets.push(new Rocket());
-  }, 350);
+  // rockets for 2.8s
+  const rocketTimer = setInterval(() => rockets.push(new Rocket()), 350);
 
-  // after 2.8s — do one big central burst then morph
   setTimeout(() => {
     clearInterval(rocketTimer);
-
-    // spawn exactly as many particles as targets
-    const bx = W / 2;
-    const by = H * 0.38;
+    const bx = W / 2, by = H * 0.38;
     const count = Math.min(targets.length, 1200);
+    const used  = targets.slice(0, count);
+    for (let i = 0; i < count; i++)
+      particles.push(new Particle(bx, by, COLORS[Math.floor(Math.random() * COLORS.length)], used[i]));
 
-    // trim targets to count
-    const usedTargets = targets.slice(0, count);
-
-    for (let i = 0; i < count; i++) {
-      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      particles.push(new Particle(bx, by, color, usedTargets[i]));
-    }
-
-    // let burst play for 0.9s then start morphing
     setTimeout(() => { morphing = true; }, 900);
 
-    // show UI after morph completes (~3s after morph starts)
+    // after letters fully formed — show UI and start sparkles+hearts
     setTimeout(() => {
       done = true;
       document.getElementById('ui').classList.add('show');
+
+      // continuously spawn sparkles and hearts around the text center
+      spawnInterval = setInterval(() => {
+        const cx = W / 2, cy = H / 2;
+        for (let i = 0; i < 3; i++) sparkles.push(new Sparkle(cx, cy));
+        for (let i = 0; i < 2; i++) hearts.push(new Heart(cx, cy));
+      }, 120);
+
     }, 900 + 2800);
 
   }, 2800);
 
-  // ══════════════════════════════
-  //  RENDER LOOP
-  // ══════════════════════════════
+  // ── RENDER LOOP ──
   function loop() {
-    // dark trail fade
-    ctx.fillStyle = done ? 'rgba(10,0,16,0.35)' : 'rgba(10,0,16,0.22)';
+    ctx.fillStyle = done ? 'rgba(10,0,16,0.3)' : 'rgba(10,0,16,0.22)';
     ctx.fillRect(0, 0, W, H);
 
-    // rockets
     rockets.forEach(r => { r.update(); r.draw(); });
     rockets = rockets.filter(r => !r.done);
 
-    // particles
     particles.forEach(p => p.update(morphing));
     particles.forEach(p => p.draw());
-    // only remove burst particles that faded; keep morph/hold ones
     particles = particles.filter(p => p.phase !== 'burst' || p.alpha > 0);
+
+    // ── snippet logic ──
+    for (var i = sparkles.length - 1; i >= 0; i--) {
+      sparkles[i].step();
+      sparkles[i].draw();
+      if (sparkles[i].life <= 0) sparkles.splice(i, 1);
+    }
+    for (var i = hearts.length - 1; i >= 0; i--) {
+      hearts[i].step();
+      hearts[i].draw();
+      if (hearts[i].life <= 0) hearts.splice(i, 1);
+    }
 
     requestAnimationFrame(loop);
   }
