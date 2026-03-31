@@ -13,23 +13,13 @@
   <div class="letter-page">
     <div class="letter-card">
       <span class="stamp">💌</span>
-
       <div class="date">Written with love, just for you</div>
-
       <h3>My Dearest,</h3>
 
-      <p>
-        Watching you walk across that stage today — or knowing that you did — filled my heart with a kind of pride I don't have words for. You worked so hard, you never gave up, and you made it. You actually made it. 🎓
-      </p>
-      <p>
-        I have been lucky enough to be by your side through some of it, and I want you to know: every single moment with you has been the best part of my days. You make ordinary things feel magical just by being in them.
-      </p>
-      <p>
-        You are brilliant, kind, funny, and so incredibly beautiful — inside and out. I admire you more than you know, and I fall a little more in love with you every single day.
-      </p>
-      <p>
-        This graduation is just the beginning of everything wonderful that is coming for you. And I hope — more than anything — that I get to be there for all of it.
-      </p>
+      <p>Watching you walk across that stage today — or knowing that you did — filled my heart with a kind of pride I don't have words for. You worked so hard, you never gave up, and you made it. You actually made it. 🎓</p>
+      <p>I have been lucky enough to be by your side through some of it, and I want you to know: every single moment with you has been the best part of my days. You make ordinary things feel magical just by being in them.</p>
+      <p>You are brilliant, kind, funny, and so incredibly beautiful — inside and out. I admire you more than you know, and I fall a little more in love with you every single day.</p>
+      <p>This graduation is just the beginning of everything wonderful that is coming for you. And I hope — more than anything — that I get to be there for all of it.</p>
 
       <div class="signature">With all my love 🌸</div>
 
@@ -39,7 +29,7 @@
         <h4>So… I have a question.</h4>
         <p>You already have my heart. Would you do me the honor of being my girlfriend?</p>
         <div class="answer-btns">
-          <button class="btn-yes" onclick="sayYes()">Yes! 💕</button>
+          <button class="btn-yes" onclick="sayYes(this)">Yes! 💕</button>
           <button class="btn-no" id="noBtn" onmouseover="runAway(this)" onclick="runAway(this)">Maybe later…</button>
         </div>
       </div>
@@ -55,29 +45,86 @@
 
   <script>
     // Petals
-    const container = document.getElementById('petals');
-    for (let i = 0; i < 18; i++) {
+    const petalContainer = document.getElementById('petals');
+    for (let i = 0; i < 24; i++) {
       const p = document.createElement('div');
       p.className = 'petal';
       p.style.left = Math.random() * 100 + 'vw';
       p.style.animationDuration = (4 + Math.random() * 6) + 's';
-      p.style.animationDelay = (Math.random() * 8) + 's';
-      container.appendChild(p);
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.width = (8 + Math.random() * 12) + 'px';
+      p.style.height = (12 + Math.random() * 14) + 'px';
+      petalContainer.appendChild(p);
     }
 
-    // "No" button runs away
+    // Sparkles
+    const sparkles = ['✨','💫','🌟','✦'];
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.top = (10 + Math.random() * 80) + 'vh';
+      s.style.animationDuration = (3 + Math.random() * 5) + 's';
+      s.style.animationDelay = (Math.random() * 8) + 's';
+      document.body.appendChild(s);
+    }
+
+    // No button runs away
     function runAway(btn) {
-      const maxX = window.innerWidth - 160;
-      const maxY = window.innerHeight - 60;
       btn.style.position = 'fixed';
-      btn.style.left = Math.random() * maxX + 'px';
-      btn.style.top  = Math.random() * maxY + 'px';
+      btn.style.left = Math.random() * (window.innerWidth - 160) + 'px';
+      btn.style.top  = Math.random() * (window.innerHeight - 60) + 'px';
       btn.style.transition = 'left 0.3s, top 0.3s';
       btn.style.zIndex = '50';
     }
 
-    function sayYes() {
-      document.getElementById('yesOverlay').classList.add('show');
+    // Confetti burst
+    function launchConfetti() {
+      const colors = ['#ff85a1','#ffd166','#a8e6cf','#c9b1ff','#ffb3c6','#ff6b9d'];
+      for (let i = 0; i < 80; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti-piece';
+        c.style.left = (30 + Math.random() * 40) + 'vw';
+        c.style.top = '40vh';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.width = (6 + Math.random() * 10) + 'px';
+        c.style.height = (6 + Math.random() * 10) + 'px';
+        c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+        c.style.animationDelay = (Math.random() * 0.5) + 's';
+        c.style.transform = `translateX(${(Math.random() - 0.5) * 300}px)`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+      }
+    }
+
+    // Floating hearts burst from button
+    function burstHearts(btn) {
+      const hearts = ['💕','💗','💖','💓','🌸','✨'];
+      const rect = btn.getBoundingClientRect();
+      for (let i = 0; i < 12; i++) {
+        const h = document.createElement('div');
+        h.style.cssText = `
+          position:fixed; z-index:300; pointer-events:none;
+          font-size:${1.2 + Math.random()}rem;
+          left:${rect.left + rect.width/2}px;
+          top:${rect.top}px;
+          animation: confettiFall ${1.5 + Math.random()}s ease forwards;
+          transform: translateX(${(Math.random()-0.5)*200}px);
+        `;
+        h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 3000);
+      }
+    }
+
+    function sayYes(btn) {
+      launchConfetti();
+      burstHearts(btn);
+      setTimeout(() => {
+        document.getElementById('yesOverlay').classList.add('show');
+      }, 400);
     }
   </script>
 </body>

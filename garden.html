@@ -18,35 +18,34 @@
 
       <!-- FLOWER -->
       <div class="flower-wrap">
-        <svg width="180" height="260" viewBox="0 0 180 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Stem -->
-          <path d="M90 260 Q85 200 90 160" stroke="#6abf69" stroke-width="6" stroke-linecap="round"/>
-          <!-- Leaf left -->
-          <path d="M88 210 Q60 195 55 175 Q75 178 88 200Z" fill="#81c784"/>
-          <!-- Leaf right -->
-          <path d="M92 190 Q120 175 125 155 Q105 162 92 182Z" fill="#81c784"/>
-
-          <!-- Petals (8 petals rotated) -->
-          <g transform="translate(90,100)">
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(0)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(45)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(90)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(135)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(180)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(225)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(270)"/>
-            <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(315)"/>
-            <!-- Center -->
-            <circle cx="0" cy="0" r="20" fill="#ffd166"/>
-            <circle cx="0" cy="0" r="13" fill="#ffb347"/>
-            <!-- Center dots -->
-            <circle cx="-4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
-            <circle cx="4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
-            <circle cx="0" cy="4" r="2" fill="#e8638c" opacity="0.7"/>
-            <circle cx="-6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
-            <circle cx="6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
-          </g>
-        </svg>
+        <div class="flower-container" id="flowerContainer">
+          <svg width="180" height="260" viewBox="0 0 180 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Stem -->
+            <path d="M90 260 Q85 200 90 160" stroke="#6abf69" stroke-width="6" stroke-linecap="round"/>
+            <!-- Leaves -->
+            <path d="M88 210 Q60 195 55 175 Q75 178 88 200Z" fill="#81c784"/>
+            <path d="M92 190 Q120 175 125 155 Q105 162 92 182Z" fill="#81c784"/>
+            <!-- Petals -->
+            <g class="petal-group" transform="translate(90,100)">
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(0)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(45)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(90)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(135)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(180)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ff85a1" opacity="0.9" transform="rotate(225)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(270)"/>
+              <ellipse cx="0" cy="-38" rx="14" ry="28" fill="#ffb3c6" opacity="0.85" transform="rotate(315)"/>
+              <!-- Center -->
+              <circle cx="0" cy="0" r="20" fill="#ffd166"/>
+              <circle cx="0" cy="0" r="13" fill="#ffb347"/>
+              <circle cx="-4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
+              <circle cx="4" cy="-4" r="2" fill="#e8638c" opacity="0.7"/>
+              <circle cx="0" cy="4" r="2" fill="#e8638c" opacity="0.7"/>
+              <circle cx="-6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
+              <circle cx="6" cy="2" r="1.5" fill="#e8638c" opacity="0.5"/>
+            </g>
+          </svg>
+        </div>
       </div>
 
       <!-- ENVELOPE -->
@@ -67,15 +66,47 @@
   </div>
 
   <script>
-    const container = document.getElementById('petals');
-    for (let i = 0; i < 18; i++) {
+    // Petals
+    const petalContainer = document.getElementById('petals');
+    for (let i = 0; i < 24; i++) {
       const p = document.createElement('div');
       p.className = 'petal';
       p.style.left = Math.random() * 100 + 'vw';
       p.style.animationDuration = (4 + Math.random() * 6) + 's';
-      p.style.animationDelay = (Math.random() * 8) + 's';
-      container.appendChild(p);
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.width = (8 + Math.random() * 12) + 'px';
+      p.style.height = (12 + Math.random() * 14) + 'px';
+      petalContainer.appendChild(p);
     }
+
+    // Sparkles
+    const sparkles = ['✨','💫','🌟','✦'];
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      s.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.top = (10 + Math.random() * 80) + 'vh';
+      s.style.animationDuration = (3 + Math.random() * 5) + 's';
+      s.style.animationDelay = (Math.random() * 8) + 's';
+      document.body.appendChild(s);
+    }
+
+    // Floating hearts around flower
+    const fc = document.getElementById('flowerContainer');
+    const heartEmojis = ['💕','💗','💖','🌸','💓'];
+    function spawnHeart() {
+      const h = document.createElement('div');
+      h.className = 'float-heart';
+      h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+      h.style.left = (20 + Math.random() * 140) + 'px';
+      h.style.bottom = (60 + Math.random() * 80) + 'px';
+      h.style.animationDuration = (2 + Math.random() * 2) + 's';
+      h.style.animationDelay = '0s';
+      fc.appendChild(h);
+      setTimeout(() => h.remove(), 4000);
+    }
+    setInterval(spawnHeart, 700);
   </script>
 </body>
 </html>
