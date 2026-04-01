@@ -655,7 +655,7 @@ function anim(){
       letters[ l ].reset();
     
     for (var i = 0; i < opts.confettiCount * 1.5; i++)
-      confetti.push(new Confetti(hw + (Math.random() - 0.5) * w, -150));
+      confetti.push(new Confetti((Math.random() - 0.5) * w, -hh));
     
     for (var i = 0; i < 40; i++) {
       var side = Math.random(), x, y;
