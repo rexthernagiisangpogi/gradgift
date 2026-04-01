@@ -4,7 +4,7 @@ body{display:flex;align-items:flex-end;justify-content:center;min-height:100vh;b
 .night{position:fixed;left:50%;top:0;transform:translateX(-50%);width:100%;height:100%;filter:blur(0.1vmin);background-image:radial-gradient(ellipse at top,transparent 0%,var(--dark-color)),radial-gradient(ellipse at bottom,var(--dark-color),rgba(145,233,255,0.2)),repeating-linear-gradient(220deg,rgb(0,0,0) 0px,rgb(0,0,0) 19px,transparent 19px,transparent 22px),repeating-linear-gradient(189deg,rgb(0,0,0) 0px,rgb(0,0,0) 19px,transparent 19px,transparent 22px),repeating-linear-gradient(148deg,rgb(0,0,0) 0px,rgb(0,0,0) 19px,transparent 19px,transparent 22px),linear-gradient(90deg,rgb(0,255,250),rgb(240,240,240));}
 .flowers{position:relative;transform:scale(0.9);}
 .flower{position:absolute;bottom:10vmin;transform-origin:bottom center;z-index:10;--fl-speed:0.8s;}
-.flower--1{left:-30vmin;animation:moving-flower-1 4s linear infinite;}
+.flower--1{left:-55vmin;animation:moving-flower-1 4s linear infinite;}
 .flower--1 .flower__line{height:70vmin;animation-delay:0.3s;}
 .flower--1 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 1.6s backwards;}
 .flower--1 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 1.4s backwards;}
@@ -12,31 +12,31 @@ body{display:flex;align-items:flex-end;justify-content:center;min-height:100vh;b
 .flower--1 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1s backwards;}
 .flower--1 .flower__line__leaf--5{animation:blooming-leaf-right var(--fl-speed) 1.8s backwards;}
 .flower--1 .flower__line__leaf--6{animation:blooming-leaf-left var(--fl-speed) 2s backwards;}
-.flower--2{left:10vmin;transform:rotate(20deg);animation:moving-flower-2 4s linear infinite;}
+.flower--2{left:-30vmin;transform:rotate(12deg);animation:moving-flower-2 4s linear infinite;}
 .flower--2 .flower__line{height:60vmin;animation-delay:0.6s;}
 .flower--2 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 1.9s backwards;}
 .flower--2 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 1.7s backwards;}
 .flower--2 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.5s backwards;}
 .flower--2 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.3s backwards;}
-.flower--3{left:-10vmin;transform:rotate(-15deg);animation:moving-flower-3 4s linear infinite;}
-.flower--3 .flower__line{animation-delay:0.9s;}
+.flower--3{left:-5vmin;transform:rotate(-10deg);animation:moving-flower-3 4s linear infinite;}
+.flower--3 .flower__line{height:65vmin;animation-delay:0.9s;}
 .flower--3 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2.5s backwards;}
 .flower--3 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 2.3s backwards;}
 .flower--3 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 2.1s backwards;}
 .flower--3 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.9s backwards;}
-.flower--4{left:30vmin;transform:rotate(10deg);animation:moving-flower-2 4s linear infinite;}
-.flower--4 .flower__line{height:65vmin;animation-delay:0.5s;}
+.flower--4{left:20vmin;transform:rotate(8deg);animation:moving-flower-2 4s linear infinite;}
+.flower--4 .flower__line{height:68vmin;animation-delay:0.5s;}
 .flower--4 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2s backwards;}
 .flower--4 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 1.8s backwards;}
 .flower--4 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.6s backwards;}
 .flower--4 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.4s backwards;}
-.flower--5{left:50vmin;transform:rotate(-10deg);animation:moving-flower-1 4s linear infinite;}
+.flower--5{left:42vmin;transform:rotate(-12deg);animation:moving-flower-1 4s linear infinite;}
 .flower--5 .flower__line{height:58vmin;animation-delay:0.7s;}
 .flower--5 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2.2s backwards;}
 .flower--5 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 2s backwards;}
 .flower--5 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.8s backwards;}
 .flower--5 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.6s backwards;}
-.flower--6{left:70vmin;transform:rotate(5deg);animation:moving-flower-3 4s linear infinite;}
+.flower--6{left:62vmin;transform:rotate(5deg);animation:moving-flower-3 4s linear infinite;}
 .flower--6 .flower__line{height:62vmin;animation-delay:1s;}
 .flower--6 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2.4s backwards;}
 .flower--6 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 2.2s backwards;}
