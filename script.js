@@ -6,10 +6,10 @@ var w = c.width = window.innerWidth,
     hh = h / 2,
     
     opts = {
-      strings: [ 'Congratulations Baby' ],
-      charSize: 30,
-      charSpacing: 35,
-      lineHeight: 40,
+      strings: [ 'Congratulations', 'Baby' ],
+      charSize: 48,
+      charSpacing: 34,
+      lineHeight: 70,
       
       cx: w / 2,
       cy: h / 2,
@@ -50,7 +50,7 @@ var w = c.width = window.innerWidth,
       balloonAddedRadian: -1,
     },
     calc = {
-      totalWidth: opts.charSpacing * Math.max( opts.strings[0].length, opts.strings[0].length )
+      totalWidth: opts.charSpacing * Math.max( opts.strings[0].length, opts.strings[1].length )
     },
     
     Tau = Math.PI * 2,
@@ -63,7 +63,7 @@ var w = c.width = window.innerWidth,
     stars = [],
     ribbons = [];
 
-ctx.font = opts.charSize + 'px Verdana';
+ctx.font = 'bold ' + opts.charSize + 'px Verdana';
 
 function Confetti(x, y) {
   this.x = x || Math.random() * w - hw;
@@ -695,5 +695,5 @@ window.addEventListener( 'resize', function(){
   h = c.height = window.innerHeight;
   hw = w / 2;
   hh = h / 2;
-  ctx.font = opts.charSize + 'px Verdana';
+  ctx.font = 'bold ' + opts.charSize + 'px Verdana';
 });
