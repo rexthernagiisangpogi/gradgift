@@ -5,43 +5,321 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A Gift For You 🌸</title>
   <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
   <style>
-    .garden-page { padding-top: 20px; }
-    #bouquetCanvas {
-      display: block;
-      filter: drop-shadow(0 12px 32px rgba(249,168,201,0.5));
-      animation: sway 5s ease-in-out infinite;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: linear-gradient(160deg, #1a0a0f 0%, #2d1020 40%, #1a0a0f 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── PAGE ── */
+    .garden-page {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; padding: 40px 20px;
+      gap: 0;
+    }
+
+    .garden-page h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; font-style: italic;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      color: #f5d0e0;
+      letter-spacing: 4px;
+      text-shadow: 0 0 30px rgba(255,150,180,0.4);
+      margin-bottom: 6px;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.3s forwards;
+    }
+    .garden-page .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      color: #c08090;
+      letter-spacing: 3px;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.6s forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── SCENE ── */
+    .scene {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+
+    /* ══════════════════════════════
+       BOUQUET
+    ══════════════════════════════ */
+    .bouquet {
+      position: relative;
+      width: 320px;
+      height: 480px;
+      animation: gentleSway 6s ease-in-out infinite;
       transform-origin: bottom center;
     }
-    @keyframes sway {
-      0%,100% { transform: rotate(-2deg); }
-      50%      { transform: rotate(2deg); }
+    @keyframes gentleSway {
+      0%,100% { transform: rotate(-1.5deg); }
+      50%      { transform: rotate(1.5deg); }
     }
-    .bouquet-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
-    .envelope      { width: 100px !important; height: 70px !important; }
-    .env-flap      { height: 38px !important; }
-    .env-heart     { font-size: 1.3rem !important; }
-    .envelope-wrap span { font-size: 0.85rem !important; }
-    .pollen {
-      position: absolute; border-radius: 50%; pointer-events: none;
-      animation: pollenFloat ease-in-out infinite; opacity: 0;
+
+    /* ── STEMS SVG ── */
+    .stems-svg {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
     }
-    @keyframes pollenFloat {
-      0%   { opacity:0; transform:translateY(0) scale(0.5); }
-      30%  { opacity:0.8; }
-      100% { opacity:0; transform:translateY(-70px) scale(1.3); }
+    .stem-path {
+      fill: none;
+      stroke-linecap: round;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+    }
+    .stem-path.grow { animation: growStem 1.4s cubic-bezier(0.4,0,0.2,1) forwards; }
+    @keyframes growStem {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ── RIBBON ── */
+    .ribbon {
+      position: absolute;
+      bottom: 60px;
+      left: 50%; transform: translateX(-50%);
+      width: 110px; z-index: 10;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateX(-50%) scale(0.8); }
+      to   { opacity:1; transform: translateX(-50%) scale(1); }
+    }
+
+    /* ── FLOWER SLOTS ── */
+    .flower {
+      position: absolute;
+      transform-origin: bottom center;
+      opacity: 0;
+      transform: scale(0.3) translateY(30px);
+      transition: none;
+      z-index: 5;
+    }
+    .flower.bloom {
+      animation: bloomIn 1.6s cubic-bezier(0.34,1.2,0.64,1) forwards;
+    }
+    @keyframes bloomIn {
+      0%   { opacity:0; transform: scale(0.15) translateY(40px) rotate(-8deg); filter: blur(4px) brightness(0.4); }
+      40%  { opacity:0.7; filter: blur(1px) brightness(0.8); }
+      70%  { transform: scale(1.08) translateY(-6px) rotate(2deg); filter: blur(0) brightness(1.05); }
+      100% { opacity:1; transform: scale(1) translateY(0) rotate(0deg); filter: blur(0) brightness(1); }
+    }
+
+    .flower img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* depth blur for back flowers */
+    .flower.back  { filter: blur(0.6px) brightness(0.88) saturate(0.9); z-index: 3; }
+    .flower.front { filter: blur(0) brightness(1.05) saturate(1.1); z-index: 7; }
+    .flower.mid   { filter: blur(0.2px) brightness(0.96); z-index: 5; }
+
+    /* breathing after bloom */
+    .flower.breathe {
+      animation: bloomIn 1.6s cubic-bezier(0.34,1.2,0.64,1) forwards,
+                 breathe var(--bd,5s) ease-in-out var(--bdelay,0s) infinite;
+    }
+    @keyframes breathe {
+      0%,100% { transform: scale(1) rotate(var(--br,0deg)); }
+      50%      { transform: scale(1.04) rotate(calc(var(--br,0deg) + 1deg)); }
+    }
+
+    /* ── LEAVES ── */
+    .leaf {
+      position: absolute;
+      opacity: 0;
+      transform-origin: bottom center;
+      z-index: 2;
+    }
+    .leaf.sprout {
+      animation: leafSprout 1s cubic-bezier(0.34,1.4,0.64,1) forwards;
+    }
+    @keyframes leafSprout {
+      from { opacity:0; transform: scale(0) rotate(-40deg); }
+      to   { opacity:0.92; transform: scale(1) rotate(0deg); }
+    }
+    .leaf img { width:100%; height:100%; object-fit:contain; pointer-events:none; }
+
+    /* ── POLLEN PARTICLES ── */
+    .pollen-dot {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 20;
+      animation: pollenDrift ease-in-out infinite;
+      opacity: 0;
+    }
+    @keyframes pollenDrift {
+      0%   { opacity:0; transform:translate(0,0) scale(0.5); }
+      20%  { opacity:0.9; }
+      100% { opacity:0; transform:translate(var(--px,10px), -80px) scale(1.4); }
+    }
+
+    /* ── LIGHT RAYS ── */
+    .light-ray {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 2px; height: 60%;
+      background: linear-gradient(to bottom, rgba(255,220,180,0.12), transparent);
+      transform-origin: top center;
+      pointer-events: none;
+      z-index: 0;
+      animation: rayFlicker 4s ease-in-out infinite;
+    }
+    @keyframes rayFlicker {
+      0%,100% { opacity:0.4; }
+      50%      { opacity:0.8; }
+    }
+
+    /* ── ENVELOPE ── */
+    .envelope      { width: 110px !important; height: 76px !important; }
+    .env-flap      { height: 42px !important; }
+    .env-heart     { font-size: 1.4rem !important; }
+    .envelope-wrap {
+      animation: fadeUp 1s ease 1s both;
+      margin-bottom: 20px;
+    }
+    .envelope-wrap span {
+      font-family: 'Cormorant Garamond', serif !important;
+      font-style: italic !important;
+      font-size: 0.95rem !important;
+      letter-spacing: 2px;
+      color: #f5d0e0 !important;
+    }
+
+    /* ── FALLING PETALS override for dark bg ── */
+    .petal {
+      background: radial-gradient(ellipse at 40% 30%, rgba(255,180,200,0.8), rgba(220,100,140,0.5)) !important;
     }
   </style>
 </head>
 <body>
+
   <div class="petals" id="petals"></div>
+
+  <!-- light rays -->
+  <div class="light-ray" style="transform:rotate(-20deg);"></div>
+  <div class="light-ray" style="transform:rotate(10deg); opacity:0.3;"></div>
+  <div class="light-ray" style="transform:rotate(35deg); opacity:0.2;"></div>
+
   <div class="garden-page">
-    <h2>A little something for you 🌸</h2>
-    <p class="subtitle">Click the envelope when you're ready ✉️</p>
+    <h2>A little something for you</h2>
+    <p class="subtitle">click the envelope when you're ready</p>
+
     <div class="scene">
-      <div class="bouquet-wrap" id="bouquetWrap">
-        <canvas id="bouquetCanvas" width="360" height="400"></canvas>
-      </div>
+
+      <!-- ══ BOUQUET ══ -->
+      <div class="bouquet" id="bouquet">
+
+        <!-- STEMS -->
+        <svg class="stems-svg" viewBox="0 0 320 480" xmlns="http://www.w3.org/2000/svg">
+          <!-- center back stem -->
+          <path id="s0" class="stem-path" d="M160,460 C158,400 155,340 158,240" stroke="#2d5a27" stroke-width="5"/>
+          <!-- left stem -->
+          <path id="s1" class="stem-path" d="M160,455 C145,400 120,350 90,255" stroke="#3a7a32" stroke-width="4.5"/>
+          <!-- right stem -->
+          <path id="s2" class="stem-path" d="M160,455 C175,400 200,350 230,255" stroke="#3a7a32" stroke-width="4.5"/>
+          <!-- far left stem -->
+          <path id="s3" class="stem-path" d="M158,450 C135,400 100,360 55,270" stroke="#4a8a40" stroke-width="4"/>
+          <!-- far right stem -->
+          <path id="s4" class="stem-path" d="M162,450 C185,400 220,360 265,268" stroke="#4a8a40" stroke-width="4"/>
+          <!-- front center stem -->
+          <path id="s5" class="stem-path" d="M160,460 C161,410 162,360 162,210" stroke="#2d5a27" stroke-width="4.5"/>
+        </svg>
+
+        <!-- LEAVES -->
+        <div class="leaf" id="l0" style="width:52px;height:38px;bottom:195px;left:68px;">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&auto=format&fit=crop&q=60" 
+               onerror="this.parentElement.style.display='none'"
+               style="border-radius:0;filter:hue-rotate(60deg) saturate(1.4) brightness(0.7);" alt="leaf"/>
+        </div>
+        <div class="leaf" id="l1" style="width:48px;height:35px;bottom:185px;right:62px;transform-origin:bottom right;">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&auto=format&fit=crop&q=60"
+               onerror="this.parentElement.style.display='none'"
+               style="border-radius:0;filter:hue-rotate(60deg) saturate(1.4) brightness(0.7) scaleX(-1);" alt="leaf"/>
+        </div>
+
+        <!-- RIBBON -->
+        <div class="ribbon" style="animation-delay:0.5s;">
+          <svg viewBox="0 0 110 55" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="55" cy="30" rx="50" ry="22" fill="#c2185b" opacity="0.9"/>
+            <ellipse cx="55" cy="28" rx="46" ry="18" fill="#e91e63" opacity="0.85"/>
+            <ellipse cx="55" cy="26" rx="40" ry="14" fill="#f06292" opacity="0.7"/>
+            <!-- bow knot -->
+            <ellipse cx="55" cy="20" rx="8" ry="6" fill="#c2185b"/>
+            <path d="M47,20 Q35,10 30,18 Q35,26 47,20Z" fill="#e91e63" opacity="0.9"/>
+            <path d="M63,20 Q75,10 80,18 Q75,26 63,20Z" fill="#e91e63" opacity="0.9"/>
+            <circle cx="55" cy="20" r="5" fill="#ad1457"/>
+            <!-- ribbon tails -->
+            <path d="M50,26 Q44,38 40,48" stroke="#c2185b" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M60,26 Q66,38 70,48" stroke="#c2185b" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- FLOWER 1: Sunflower (center back) -->
+        <div class="flower back" id="f0"
+             style="width:110px;height:110px;bottom:225px;left:105px;--br:-2deg;--bd:6s;--bdelay:0s;">
+          <img src="https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=300&auto=format&fit=crop&q=80" alt="sunflower"/>
+        </div>
+
+        <!-- FLOWER 2: Red Rose (left) -->
+        <div class="flower mid" id="f1"
+             style="width:100px;height:100px;bottom:238px;left:40px;--br:3deg;--bd:5.5s;--bdelay:0.4s;">
+          <img src="https://images.unsplash.com/photo-1548460268-a2ae5ec0d240?w=300&auto=format&fit=crop&q=80" alt="red rose"/>
+        </div>
+
+        <!-- FLOWER 3: Pink Rose (right) -->
+        <div class="flower mid" id="f2"
+             style="width:100px;height:100px;bottom:238px;right:40px;--br:-3deg;--bd:5s;--bdelay:0.6s;">
+          <img src="https://images.unsplash.com/photo-1559563458-527698bf5295?w=300&auto=format&fit=crop&q=80" alt="pink rose"/>
+        </div>
+
+        <!-- FLOWER 4: Orchid (far left) -->
+        <div class="flower back" id="f3"
+             style="width:88px;height:88px;bottom:252px;left:10px;--br:4deg;--bd:7s;--bdelay:0.2s;">
+          <img src="https://images.unsplash.com/photo-1566907225472-514215c9e6e4?w=300&auto=format&fit=crop&q=80" alt="orchid"/>
+        </div>
+
+        <!-- FLOWER 5: Carnation (far right) -->
+        <div class="flower back" id="f4"
+             style="width:88px;height:88px;bottom:250px;right:8px;--br:-4deg;--bd:6.5s;--bdelay:0.3s;">
+          <img src="https://images.unsplash.com/photo-1490750967868-88df5691cc5e?w=300&auto=format&fit=crop&q=80" alt="carnation"/>
+        </div>
+
+        <!-- FLOWER 6: Gerbera Daisy (front center) -->
+        <div class="flower front" id="f5"
+             style="width:105px;height:105px;bottom:192px;left:108px;--br:1deg;--bd:5s;--bdelay:0.5s;">
+          <img src="https://images.unsplash.com/photo-1490750967868-88df5691cc5e?w=300&auto=format&fit=crop&q=80" alt="gerbera daisy"
+               style="filter:hue-rotate(20deg) saturate(1.3);"/>
+        </div>
+
+      </div><!-- /bouquet -->
+
+      <!-- ENVELOPE -->
       <a href="letter.html" class="envelope-wrap">
         <div class="envelope">
           <div class="env-body">
@@ -50,429 +328,103 @@
           <div class="env-flap"></div>
           <div class="env-heart">💌</div>
         </div>
-        <span>Open me ✨</span>
+        <span>Open me</span>
       </a>
+
     </div>
   </div>
 
 <script>
-const canvas = document.getElementById('bouquetCanvas');
-const ctx    = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
+// ── STEM GROW SEQUENCE ──
+const stemDelays = [200, 400, 500, 650, 700, 300]; // ms
+const stemDurs   = [1200,1100,1100,1000,1000,1300];
 
-// ── EASING ──
-function easeOutCubic(t)   { return 1-Math.pow(1-t,3); }
-function easeOutElastic(t) {
-  if(t===0||t===1) return t;
-  return Math.pow(2,-10*t)*Math.sin((t*10-0.75)*(2*Math.PI/3))+1;
+stemDelays.forEach((delay, i) => {
+  setTimeout(() => {
+    const el = document.getElementById('s'+i);
+    if (!el) return;
+    el.style.animationDuration = stemDurs[i] + 'ms';
+    el.classList.add('grow');
+  }, delay);
+});
+
+// ── LEAF SPROUT ──
+const leafDelays = [1400, 1600];
+leafDelays.forEach((delay, i) => {
+  setTimeout(() => {
+    const el = document.getElementById('l'+i);
+    if (el) el.classList.add('sprout');
+  }, delay);
+});
+
+// ── FLOWER BLOOM SEQUENCE ──
+const flowerDelays = [1600, 1900, 2100, 2300, 2400, 2700];
+flowerDelays.forEach((delay, i) => {
+  setTimeout(() => {
+    const el = document.getElementById('f'+i);
+    if (!el) return;
+    el.classList.add('bloom');
+    // after bloom, add breathe
+    setTimeout(() => {
+      el.classList.remove('bloom');
+      el.style.opacity = '1';
+      el.style.transform = 'scale(1)';
+      el.classList.add('breathe');
+    }, 1600);
+  }, delay);
+});
+
+// ── POLLEN PARTICLES ──
+const bouquet = document.getElementById('bouquet');
+const pollenColors = ['#ffd54f','#ffb300','#ff8f00','#f48fb1','#ce93d8','#fff9c4'];
+function spawnPollen() {
+  const p = document.createElement('div');
+  p.className = 'pollen-dot';
+  const size = 2 + Math.random() * 4;
+  p.style.width  = size + 'px';
+  p.style.height = size + 'px';
+  p.style.background = pollenColors[Math.floor(Math.random() * pollenColors.length)];
+  p.style.boxShadow  = `0 0 ${size*2}px ${p.style.background}`;
+  p.style.left = (60 + Math.random() * 200) + 'px';
+  p.style.bottom = (200 + Math.random() * 180) + 'px';
+  p.style.setProperty('--px', (Math.random()-0.5)*60 + 'px');
+  p.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+  p.style.animationDelay    = (Math.random() * 2) + 's';
+  bouquet.appendChild(p);
+  setTimeout(() => p.remove(), 6000);
 }
-function easeInOutCubic(t) { return t<0.5?4*t*t*t:(1-Math.pow(-2*t+2,3))/2; }
-function clamp(v,a,b)      { return Math.max(a,Math.min(b,v)); }
-function prog(t,s,e)       { return clamp((t-s)/(e-s),0,1); }
+setInterval(spawnPollen, 300);
 
-const TOTAL = 6000; // ms
-let startTime = null;
-let breatheT  = 0;
-
-// ── STEM ──
-function drawStem(x1,y1,x2,y2,t,col,w) {
-  if(t<=0) return;
-  const ex=x1+(x2-x1)*t, ey=y1+(y2-y1)*t;
-  const cpx=(x1+x2)/2+(x2>x1?-8:8), cpy=(y1+y2)/2-10;
-  ctx.save();
-  ctx.strokeStyle=col; ctx.lineWidth=w; ctx.lineCap='round';
-  ctx.shadowBlur=4; ctx.shadowColor=col;
-  // draw partial bezier by sampling
-  ctx.beginPath();
-  let first=true;
-  const steps=40;
-  for(let i=0;i<=steps;i++){
-    const u=(i/steps)*t;
-    const px=(1-u)*(1-u)*x1+2*(1-u)*u*cpx+u*u*x2;
-    const py=(1-u)*(1-u)*y1+2*(1-u)*u*cpy+u*u*y2;
-    first?(ctx.moveTo(px,py),first=false):ctx.lineTo(px,py);
-  }
-  ctx.stroke(); ctx.restore();
-}
-
-// ── LEAF ──
-function drawLeaf(x,y,angle,size,t,col) {
-  if(t<=0) return;
-  const s=easeOutElastic(clamp(t,0,1));
-  ctx.save();
-  ctx.translate(x,y); ctx.rotate(angle); ctx.scale(s,s);
-  ctx.fillStyle=col; ctx.shadowBlur=4; ctx.shadowColor=col;
-  ctx.beginPath();
-  ctx.moveTo(0,0);
-  ctx.bezierCurveTo(-size*.5,-size*.4,-size*.3,-size,0,-size*1.1);
-  ctx.bezierCurveTo(size*.3,-size,size*.5,-size*.4,0,0);
-  ctx.fill(); ctx.restore();
-}
-
-// ── GENERIC PETAL ──
-function drawPetal(cx,cy,angle,len,wid,col,alpha,t,curvature) {
-  if(t<=0||alpha<=0) return;
-  const cv = curvature||0.85;
-  const sy=easeOutElastic(clamp(t,0,1));
-  ctx.save();
-  ctx.globalAlpha=clamp(alpha,0,1);
-  ctx.translate(cx,cy); ctx.rotate(angle); ctx.scale(1,sy);
-  ctx.fillStyle=col; ctx.shadowBlur=6; ctx.shadowColor=col;
-  ctx.beginPath();
-  ctx.moveTo(0,0);
-  ctx.bezierCurveTo(-wid*0.6,-len*0.3,-wid*0.5,-len*cv,0,-len);
-  ctx.bezierCurveTo(wid*0.5,-len*cv,wid*0.6,-len*0.3,0,0);
-  ctx.fill(); ctx.restore();
-}
-
-// ── CENTER ──
-function drawCenter(cx,cy,r,c1,c2,t,shadowCol) {
-  if(t<=0) return;
-  const cr=r*easeOutCubic(clamp(t,0,1));
-  ctx.save();
-  const g=ctx.createRadialGradient(cx-cr*.25,cy-cr*.25,cr*.05,cx,cy,cr);
-  g.addColorStop(0,c1); g.addColorStop(1,c2);
-  ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
-  ctx.fillStyle=g; ctx.shadowBlur=10; ctx.shadowColor=shadowCol||c1;
-  ctx.fill(); ctx.restore();
-}
-
-// ══════════════════════════════════════════
-//  FLOWER DRAWERS
-// ══════════════════════════════════════════
-
-// 1. SUNFLOWER
-function drawSunflower(cx,cy,t,breath) {
-  const tp=prog(t,0,0.7);
-  const tc=prog(t,0.5,0.85);
-  const s=breath;
-  // outer petals (long, pointed)
-  for(let i=0;i<16;i++){
-    const angle=(i/16)*Math.PI*2;
-    const pt=clamp(tp-i*0.035,0,1);
-    const col=i%2===0?'#ffd166':'#ffb347';
-    drawPetal(cx,cy,angle,30*s,8*s,col,pt,pt,0.9);
-  }
-  // inner shorter petals
-  for(let i=0;i<16;i++){
-    const angle=(i/16)*Math.PI*2+(Math.PI/16);
-    const pt=clamp(tp-0.2-i*0.03,0,1);
-    drawPetal(cx,cy,angle,20*s,6*s,'#ffc107',pt*0.8,pt,0.9);
-  }
-  // dark brown center
-  drawCenter(cx,cy,16*s,'#6d3b00','#3e2000',tc,'#8B4513');
-  // center texture dots
-  if(tc>0.3){
-    for(let i=0;i<12;i++){
-      const a=(i/12)*Math.PI*2, r=8*s;
-      ctx.save(); ctx.globalAlpha=(tc-0.3)/0.7*0.7;
-      ctx.fillStyle='#a0522d';
-      ctx.beginPath(); ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1.5*s,0,Math.PI*2); ctx.fill();
-      ctx.restore();
-    }
-  }
-}
-
-// 2. RED ROSE
-function drawRose(cx,cy,t,breath,col1,col2,colInner) {
-  const tp=prog(t,0,0.75);
-  const tc=prog(t,0.55,0.82);
-  const s=breath;
-  // outer petals (7, cupped shape)
-  for(let i=0;i<7;i++){
-    const angle=(i/7)*Math.PI*2;
-    const pt=clamp(tp-i*0.07,0,1);
-    drawPetal(cx,cy,angle,26*s,15*s,col1,pt*0.92,pt,0.8);
-  }
-  // mid petals
-  for(let i=0;i<6;i++){
-    const angle=(i/6)*Math.PI*2+0.45;
-    const pt=clamp(tp-0.25-i*0.06,0,1);
-    drawPetal(cx,cy,angle,18*s,11*s,col2,pt*0.9,pt,0.75);
-  }
-  // inner tight petals
-  for(let i=0;i<5;i++){
-    const angle=(i/5)*Math.PI*2+0.2;
-    const pt=clamp(tp-0.45-i*0.05,0,1);
-    drawPetal(cx,cy,angle,11*s,7*s,colInner,pt*0.88,pt,0.7);
-  }
-  // center bud
-  drawCenter(cx,cy,7*s,'#ffcdd2',col2,tc,col1);
-}
-
-// 3. ORCHID
-function drawOrchid(cx,cy,t,breath) {
-  const tp=prog(t,0,0.72);
-  const tc=prog(t,0.52,0.80);
-  const s=breath;
-  // 2 large back petals (dorsal)
-  for(let i=0;i<2;i++){
-    const angle=-Math.PI/2+(i===0?-0.5:0.5);
-    const pt=clamp(tp-i*0.1,0,1);
-    drawPetal(cx,cy,angle,28*s,10*s,'#ce93d8',pt*0.9,pt,0.88);
-  }
-  // 2 side petals (lateral)
-  for(let i=0;i<2;i++){
-    const angle=(i===0?Math.PI*0.1:-Math.PI*0.1)+Math.PI/2;
-    const pt=clamp(tp-0.1-i*0.08,0,1);
-    drawPetal(cx,cy,angle,24*s,12*s,'#ba68c8',pt*0.9,pt,0.85);
-  }
-  // 1 top dorsal petal
-  const pt0=clamp(tp-0.05,0,1);
-  drawPetal(cx,cy,-Math.PI/2,26*s,11*s,'#ab47bc',pt0*0.9,pt0,0.88);
-  // lip petal (labellum) — wider, more colorful
-  const ptL=clamp(tp-0.15,0,1);
-  if(ptL>0){
-    ctx.save();
-    ctx.globalAlpha=ptL*0.95;
-    ctx.translate(cx,cy); ctx.scale(s,easeOutElastic(clamp(ptL,0,1))*s);
-    ctx.fillStyle='#f48fb1';
-    ctx.shadowBlur=8; ctx.shadowColor='#e91e8c';
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.bezierCurveTo(-14,4,-16,18,-8,26);
-    ctx.bezierCurveTo(-2,30,2,30,8,26);
-    ctx.bezierCurveTo(16,18,14,4,0,0);
-    ctx.fill();
-    // lip pattern
-    ctx.globalAlpha=ptL*0.5; ctx.fillStyle='#c2185b';
-    ctx.beginPath(); ctx.ellipse(0,18*s,4*s,6*s,0,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-  }
-  // column (center)
-  drawCenter(cx,cy,6*s,'#fff9c4','#f9a825',tc,'#ffd54f');
-  // purple dots on lip
-  if(tc>0.2){
-    [[-3,14],[3,14],[0,20],[-5,18],[5,18]].forEach(([dx,dy])=>{
-      ctx.save(); ctx.globalAlpha=(tc-0.2)/0.8*0.6;
-      ctx.fillStyle='#880e4f';
-      ctx.beginPath(); ctx.arc(cx+dx*s,cy+dy*s,1.2*s,0,Math.PI*2); ctx.fill();
-      ctx.restore();
-    });
-  }
-}
-
-// 4. CARNATION
-function drawCarnation(cx,cy,t,breath,col1,col2) {
-  const tp=prog(t,0,0.78);
-  const s=breath;
-  // carnations have many ruffled petals in layers
-  const layers=[
-    {count:8, len:20, wid:10, col:col1, offset:0,    delay:0},
-    {count:8, len:17, wid:9,  col:col2, offset:0.2,  delay:0.12},
-    {count:7, len:14, wid:8,  col:col1, offset:0.4,  delay:0.22},
-    {count:6, len:11, wid:7,  col:col2, offset:0.6,  delay:0.32},
-    {count:5, len:8,  wid:6,  col:col1, offset:0.8,  delay:0.40},
-  ];
-  layers.forEach(layer=>{
-    for(let i=0;i<layer.count;i++){
-      const angle=(i/layer.count)*Math.PI*2+layer.offset;
-      const pt=clamp(tp-layer.delay-i*0.04,0,1);
-      if(pt<=0) return;
-      // ruffled edge — draw petal with jagged top
-      const sy=easeOutElastic(clamp(pt,0,1));
-      ctx.save();
-      ctx.globalAlpha=pt*0.92;
-      ctx.translate(cx,cy); ctx.rotate(angle); ctx.scale(s,sy*s);
-      ctx.fillStyle=layer.col; ctx.shadowBlur=5; ctx.shadowColor=layer.col;
-      ctx.beginPath();
-      ctx.moveTo(0,0);
-      // ruffled petal shape
-      ctx.bezierCurveTo(-layer.wid*.5,-layer.len*.2,-layer.wid*.7,-layer.len*.6,-layer.wid*.4,-layer.len);
-      ctx.bezierCurveTo(-layer.wid*.2,-layer.len*1.1,0,-layer.len*1.15,0,-layer.len);
-      ctx.bezierCurveTo(layer.wid*.2,-layer.len*1.1,layer.wid*.4,-layer.len*1.05,layer.wid*.4,-layer.len);
-      ctx.bezierCurveTo(layer.wid*.7,-layer.len*.6,layer.wid*.5,-layer.len*.2,0,0);
-      ctx.fill(); ctx.restore();
-    }
-  });
-  // small center
-  const tc=prog(t,0.55,0.80);
-  drawCenter(cx,cy,5*s,'#fff',col2,tc,col1);
-}
-
-// 5. GERBERA DAISY
-function drawGerbera(cx,cy,t,breath,col1,col2) {
-  const tp=prog(t,0,0.72);
-  const tc=prog(t,0.50,0.78);
-  const s=breath;
-  // outer petals (long, narrow, many)
-  for(let i=0;i<24;i++){
-    const angle=(i/24)*Math.PI*2;
-    const pt=clamp(tp-i*0.025,0,1);
-    drawPetal(cx,cy,angle,28*s,6*s,col1,pt*0.95,pt,0.92);
-  }
-  // inner shorter petals
-  for(let i=0;i<16;i++){
-    const angle=(i/16)*Math.PI*2+(Math.PI/16);
-    const pt=clamp(tp-0.2-i*0.03,0,1);
-    drawPetal(cx,cy,angle,18*s,5*s,col2,pt*0.85,pt,0.9);
-  }
-  // dark center ring
-  drawCenter(cx,cy,10*s,'#3d2b00','#1a1200',tc,'#5d4037');
-  // bright inner center
-  drawCenter(cx,cy,6*s,'#ffd54f','#ff8f00',prog(t,0.58,0.82),'#ffc107');
-  // center dots
-  if(tc>0.4){
-    for(let i=0;i<8;i++){
-      const a=(i/8)*Math.PI*2, r=7.5*s;
-      ctx.save(); ctx.globalAlpha=(tc-0.4)/0.6*0.8;
-      ctx.fillStyle='#ff6f00';
-      ctx.beginPath(); ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1.2*s,0,Math.PI*2); ctx.fill();
-      ctx.restore();
-    }
-  }
-}
-
-// ══════════════════════════════════════════
-//  FLOWER LAYOUT
-// ══════════════════════════════════════════
-// positions: sunflower(center), red rose(left), pink rose(right),
-//            orchid(far left), carnation(far right), gerbera(front center)
-const layout = [
-  // type, cx, cy, stemX1,stemY1,stemX2,stemY2, stemCol, stemW, leaves, tStem, tFlower
-  {
-    type:'sunflower', cx:180, cy:185,
-    sx1:180,sy1:395, sx2:180,sy2:200, sc:'#5a9e50', sw:6,
-    leaves:[{x:155,y:295,a:-0.55,s:24,c:'#388e3c'},{x:205,y:275,a:0.55,s:22,c:'#43a047'}],
-    tStem:[0,0.30], tLeaf:[0.22,0.44], tFlower:[0.36,1.0], delay:0
-  },
-  {
-    type:'redrose', cx:105, cy:200,
-    sx1:175,sy1:388, sx2:105,sy2:215, sc:'#6abf69', sw:5,
-    leaves:[{x:140,y:310,a:-0.6,s:20,c:'#66bb6a'}],
-    tStem:[0.06,0.34], tLeaf:[0.26,0.46], tFlower:[0.40,1.0], delay:0
-  },
-  {
-    type:'pinkrose', cx:255, cy:200,
-    sx1:185,sy1:388, sx2:255,sy2:215, sc:'#6abf69', sw:5,
-    leaves:[{x:220,y:305,a:0.6,s:20,c:'#66bb6a'}],
-    tStem:[0.08,0.36], tLeaf:[0.28,0.48], tFlower:[0.42,1.0], delay:0
-  },
-  {
-    type:'orchid', cx:55, cy:215,
-    sx1:172,sy1:382, sx2:55,sy2:230, sc:'#81c784', sw:4,
-    leaves:[{x:110,y:320,a:-0.65,s:18,c:'#81c784'}],
-    tStem:[0.12,0.40], tLeaf:[0.32,0.52], tFlower:[0.46,1.0], delay:0
-  },
-  {
-    type:'carnation', cx:305, cy:210,
-    sx1:188,sy1:382, sx2:305,sy2:225, sc:'#81c784', sw:4,
-    leaves:[{x:250,y:315,a:0.65,s:18,c:'#81c784'}],
-    tStem:[0.14,0.42], tLeaf:[0.34,0.54], tFlower:[0.48,1.0], delay:0
-  },
-  {
-    type:'gerbera', cx:180, cy:155,
-    sx1:180,sy1:395, sx2:180,sy2:170, sc:'#4caf50', sw:4,
-    leaves:[{x:162,y:260,a:-0.4,s:16,c:'#66bb6a'},{x:198,y:245,a:0.4,s:16,c:'#66bb6a'}],
-    tStem:[0.02,0.28], tLeaf:[0.20,0.40], tFlower:[0.34,1.0], delay:0
-  },
-];
-
-function drawRibbon(t) {
-  if(t<=0) return;
-  ctx.save(); ctx.globalAlpha=clamp(t*2,0,1);
-  ctx.fillStyle='#ffb3c6'; ctx.shadowBlur=10; ctx.shadowColor='#ff85a1';
-  ctx.beginPath();
-  ctx.moveTo(125,332); ctx.quadraticCurveTo(180,318,235,332);
-  ctx.quadraticCurveTo(228,348,180,351); ctx.quadraticCurveTo(132,348,125,332);
-  ctx.fill();
-  ctx.strokeStyle='#e8638c'; ctx.lineWidth=1.8; ctx.globalAlpha=clamp(t*2,0,1)*0.55;
-  ctx.beginPath(); ctx.moveTo(135,329); ctx.quadraticCurveTo(180,320,225,329); ctx.stroke();
-  ctx.restore();
-}
-
-function render(ts) {
-  if(!startTime) startTime=ts;
-  const t=clamp((ts-startTime)/TOTAL,0,1);
-  breatheT+=0.016;
-
-  ctx.clearRect(0,0,W,H);
-  drawRibbon(prog(t,0,0.12));
-
-  layout.forEach((f,idx)=>{
-    const breath=1+Math.sin(breatheT+idx*0.85)*0.016;
-
-    // stem
-    const tStem=easeOutCubic(prog(t,f.tStem[0],f.tStem[1]));
-    drawStem(f.sx1,f.sy1,f.sx2,f.sy2,tStem,f.sc,f.sw);
-
-    // leaves
-    const tLeafG=prog(t,f.tLeaf[0],f.tLeaf[1]);
-    f.leaves.forEach((l,i)=>{
-      drawLeaf(l.x,l.y,l.a,l.s,clamp(tLeafG-i*0.2,0,1),l.c);
-    });
-
-    // flower
-    const tf=prog(t,f.tFlower[0],f.tFlower[1]);
-    if(tf<=0) return;
-
-    if(f.type==='sunflower') drawSunflower(f.cx,f.cy,tf,breath);
-    else if(f.type==='redrose')  drawRose(f.cx,f.cy,tf,breath,'#c62828','#e53935','#ef9a9a');
-    else if(f.type==='pinkrose') drawRose(f.cx,f.cy,tf,breath,'#e91e8c','#f06292','#f8bbd0');
-    else if(f.type==='orchid')   drawOrchid(f.cx,f.cy,tf,breath);
-    else if(f.type==='carnation')drawCarnation(f.cx,f.cy,tf,breath,'#e91e63','#f48fb1');
-    else if(f.type==='gerbera')  drawGerbera(f.cx,f.cy,tf,breath,'#ff5722','#ff8a65');
-  });
-
-  requestAnimationFrame(render);
-}
-requestAnimationFrame(render);
-
-// ── PETALS ──
-const pc=document.getElementById('petals');
-for(let i=0;i<28;i++){
-  const p=document.createElement('div'); p.className='petal';
-  p.style.left=Math.random()*100+'vw';
-  p.style.animationDuration=(4+Math.random()*6)+'s';
-  p.style.animationDelay=(Math.random()*10)+'s';
-  p.style.width=(8+Math.random()*12)+'px';
-  p.style.height=(12+Math.random()*14)+'px';
+// ── FALLING PETALS ──
+const pc = document.getElementById('petals');
+for (let i = 0; i < 22; i++) {
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.animationDuration = (5 + Math.random() * 7) + 's';
+  p.style.animationDelay    = (Math.random() * 12) + 's';
+  p.style.width  = (6 + Math.random() * 10) + 'px';
+  p.style.height = (9 + Math.random() * 12) + 'px';
+  p.style.opacity = '0.5';
   pc.appendChild(p);
 }
 
-// ── SPARKLES ──
-['✨','💫','🌟','✦'].forEach((_,i)=>{
-  for(let j=0;j<4;j++){
-    const s=document.createElement('div'); s.className='sparkle';
-    s.textContent=['✨','💫','🌟','✦'][Math.floor(Math.random()*4)];
-    s.style.left=Math.random()*100+'vw';
-    s.style.top=(10+Math.random()*80)+'vh';
-    s.style.animationDuration=(3+Math.random()*5)+'s';
-    s.style.animationDelay=(Math.random()*8)+'s';
-    document.body.appendChild(s);
-  }
-});
-
-// ── HEARTS ──
-const wrap=document.getElementById('bouquetWrap');
-const hEmojis=['💕','💗','💖','🌸','💓'];
-function spawnHeart(){
-  const h=document.createElement('div'); h.className='float-heart';
-  h.textContent=hEmojis[Math.floor(Math.random()*hEmojis.length)];
-  h.style.left=(10+Math.random()*320)+'px';
-  h.style.bottom=(60+Math.random()*130)+'px';
-  h.style.animationDuration=(2+Math.random()*2)+'s';
-  h.style.animationDelay='0s';
+// ── FLOATING HEARTS ──
+const wrap = document.getElementById('bouquet');
+const hEmojis = ['💕','💗','💖','🌸','💓','✨'];
+function spawnHeart() {
+  const h = document.createElement('div');
+  h.className = 'float-heart';
+  h.textContent = hEmojis[Math.floor(Math.random() * hEmojis.length)];
+  h.style.left   = (20 + Math.random() * 280) + 'px';
+  h.style.bottom = (200 + Math.random() * 150) + 'px';
+  h.style.animationDuration = (2.5 + Math.random() * 2.5) + 's';
+  h.style.animationDelay = '0s';
+  h.style.fontSize = (0.8 + Math.random() * 0.6) + 'rem';
   wrap.appendChild(h);
-  setTimeout(()=>h.remove(),4000);
+  setTimeout(() => h.remove(), 5000);
 }
-setInterval(spawnHeart,700);
-
-// ── POLLEN ──
-const pollenCols=['#ffd166','#ffb347','#ff85a1','#ce93d8','#ff5722'];
-function spawnPollen(){
-  const p=document.createElement('div'); p.className='pollen';
-  const sz=3+Math.random()*5;
-  p.style.width=sz+'px'; p.style.height=sz+'px';
-  p.style.background=pollenCols[Math.floor(Math.random()*pollenCols.length)];
-  p.style.left=(40+Math.random()*280)+'px';
-  p.style.top=(60+Math.random()*200)+'px';
-  p.style.animationDuration=(2+Math.random()*3)+'s';
-  p.style.animationDelay=(Math.random()*2)+'s';
-  wrap.appendChild(p);
-  setTimeout(()=>p.remove(),5000);
-}
-setInterval(spawnPollen,350);
+setInterval(spawnHeart, 900);
 </script>
 </body>
 </html>
