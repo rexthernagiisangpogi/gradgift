@@ -297,12 +297,12 @@ function Letter( char, x, y ){
   
   this.fireworkDy = this.y - hh;
   
-  var hue = x / calc.totalWidth * 360;
+  var hue = 340;
   
-  this.color = 'hsl(hue,80%,50%)'.replace( 'hue', hue );
-  this.lightAlphaColor = 'hsla(hue,80%,light%,alp)'.replace( 'hue', hue );
-  this.lightColor = 'hsl(hue,80%,light%)'.replace( 'hue', hue );
-  this.alphaColor = 'hsla(hue,80%,50%,alp)'.replace( 'hue', hue );
+  this.color = 'hsl(340,90%,65%)';
+  this.lightAlphaColor = 'hsla(340,90%,light%,alp)';
+  this.lightColor = 'hsl(340,90%,light%)';
+  this.alphaColor = 'hsla(340,90%,65%,alp)';
   
   this.reset();
 }
