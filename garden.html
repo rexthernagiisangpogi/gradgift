@@ -6,31 +6,27 @@
   <title>A Gift For You 🌸</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* ── page layout ── */
     .garden-page { padding-top: 20px; }
 
-    /* ── bouquet canvas ── */
     #bouquetCanvas {
       display: block;
-      filter: drop-shadow(0 12px 32px rgba(249,168,201,0.55));
+      filter: drop-shadow(0 12px 32px rgba(249,168,201,0.5));
       animation: sway 5s ease-in-out infinite;
       transform-origin: bottom center;
     }
     @keyframes sway {
-      0%,100% { transform: rotate(-2.5deg); }
-      50%      { transform: rotate(2.5deg); }
+      0%,100% { transform: rotate(-2deg); }
+      50%      { transform: rotate(2deg); }
     }
 
-    /* ── envelope smaller ── */
-    .envelope { width: 100px !important; height: 70px !important; }
-    .env-flap  { height: 38px !important; }
-    .env-heart { font-size: 1.3rem !important; }
-    .envelope-wrap span { font-size: 0.85rem !important; }
-
-    /* ── shimmer glow on canvas ── */
     .bouquet-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
 
-    /* ── pollen dust particles ── */
+    /* smaller envelope */
+    .envelope      { width: 100px !important; height: 70px !important; }
+    .env-flap      { height: 38px !important; }
+    .env-heart     { font-size: 1.3rem !important; }
+    .envelope-wrap span { font-size: 0.85rem !important; }
+
     .pollen {
       position: absolute;
       border-radius: 50%;
@@ -41,7 +37,7 @@
     @keyframes pollenFloat {
       0%   { opacity: 0; transform: translateY(0) scale(0.5); }
       30%  { opacity: 0.8; }
-      100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-70px) scale(1.3); }
     }
   </style>
 </head>
@@ -55,12 +51,10 @@
 
     <div class="scene">
 
-      <!-- BOUQUET CANVAS -->
       <div class="bouquet-wrap" id="bouquetWrap">
-        <canvas id="bouquetCanvas" width="340" height="360"></canvas>
+        <canvas id="bouquetCanvas" width="340" height="380"></canvas>
       </div>
 
-      <!-- ENVELOPE -->
       <a href="letter.html" class="envelope-wrap">
         <div class="envelope">
           <div class="env-body">
@@ -75,392 +69,343 @@
     </div>
   </div>
 
-  <script>
-  // ══════════════════════════════════════════
-  //  CANVAS BOUQUET WITH BLOSSOMING ANIMATION
-  // ══════════════════════════════════════════
-  const canvas = document.getElementById('bouquetCanvas');
-  const ctx    = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+<script>
+const canvas = document.getElementById('bouquetCanvas');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
 
-  // easing
-  function easeOutElastic(t) {
-    const c4 = (2 * Math.PI) / 3;
-    return t === 0 ? 0 : t === 1 ? 1 :
-      Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
-  }
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-  function lerp(a, b, t)   { return a + (b - a) * t; }
+// ── EASING ──
+function easeOutCubic(t)   { return 1 - Math.pow(1-t, 3); }
+function easeOutElastic(t) {
+  const c4 = (2*Math.PI)/3;
+  return t===0?0:t===1?1: Math.pow(2,-10*t)*Math.sin((t*10-0.75)*c4)+1;
+}
+function easeInOutCubic(t) { return t<0.5?4*t*t*t:(1-Math.pow(-2*t+2,3))/2; }
+function clamp(v,a,b)      { return Math.max(a,Math.min(b,v)); }
+function prog(t,s,e)       { return clamp((t-s)/(e-s),0,1); } // local progress within a window
 
-  // ── FLOWER DEFINITIONS ──
-  // Each flower: cx, cy, type, bloomDelay, petalCount, petalColor, petalColor2, centerColor, size
-  const flowers = [
-    // center rose — pink
-    { cx:170, cy:195, type:'rose',      delay:0,    petals:7,  innerPetals:5, col1:'#ff85a1', col2:'#ff6b9d', colI:'#ffb3c6', ctr1:'#ffd166', ctr2:'#ffb347', size:1.15 },
-    // left daisy — purple
-    { cx:105, cy:210, type:'daisy',     delay:0.18, petals:9,  col1:'#c9b1ff', col2:'#b39ddb', ctr1:'#ffd166', ctr2:'#ffb347', size:0.88 },
-    // right sunflower — yellow
-    { cx:235, cy:210, type:'sunflower', delay:0.22, petals:8,  col1:'#ffd166', col2:'#ffb347', ctr1:'#7b4f00', ctr2:'#5d3a00', size:0.92 },
-    // far left tulip — white/pink
-    { cx:62,  cy:222, type:'tulip',     delay:0.35, col1:'#fff0f6', col2:'#ffd6e8', col3:'#ffb3c6', size:0.82 },
-    // far right poppy — red
-    { cx:258, cy:220, type:'poppy',     delay:0.38, petals:4,  col1:'#ff4757', col2:'#ff6b81', ctr1:'#2d2d2d', ctr2:'#1a1a1a', size:0.85 },
-    // accent left — baby's breath
-    { cx:135, cy:182, type:'babysbreath', delay:0.5, col1:'#ffb3c6', col2:'#ffc8dd', size:0.7 },
-    // accent right — lavender
-    { cx:200, cy:180, type:'lavender',  delay:0.55, col1:'#e1bee7', col2:'#ce93d8', size:0.7 },
-  ];
+// ── DRAW A GROWING STEM SEGMENT ──
+// draws from (x1,y1) toward (x2,y2) up to fraction t (0=nothing, 1=full)
+function drawGrowingStem(x1,y1,x2,y2,t,col,w) {
+  if (t<=0) return;
+  const tx = x1+(x2-x1)*t;
+  const ty = y1+(y2-y1)*t;
+  const mx = (x1+x2)/2, my = (y1+y2)/2;
+  ctx.save();
+  ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round';
+  ctx.shadowBlur=5; ctx.shadowColor=col;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  // quadratic curve — control point scales with t too
+  const cx2 = x1+(mx-x1)*t, cy2 = y1+(my-y1)*t;
+  ctx.quadraticCurveTo(cx2, cy2, tx, ty);
+  ctx.stroke();
+  ctx.restore();
+}
 
-  // global bloom progress per flower (0→1)
-  const bloom    = flowers.map(() => 0);
-  const breathe  = flowers.map(() => 0); // for gentle breathing after bloom
-  let   startTime = null;
-  const BLOOM_DUR = 2200; // ms for full bloom
+// ── DRAW A SPROUTING LEAF ──
+function drawLeaf(x,y,angle,size,t,col) {
+  if (t<=0) return;
+  const s = easeOutElastic(clamp(t,0,1));
+  ctx.save();
+  ctx.translate(x,y); ctx.rotate(angle);
+  ctx.scale(s,s);
+  ctx.fillStyle=col; ctx.shadowBlur=5; ctx.shadowColor=col;
+  ctx.beginPath();
+  ctx.moveTo(0,0);
+  ctx.bezierCurveTo(-size*0.5,-size*0.4,-size*0.3,-size,0,-size*1.1);
+  ctx.bezierCurveTo( size*0.3,-size, size*0.5,-size*0.4,0,0);
+  ctx.fill();
+  ctx.restore();
+}
 
-  // ── DRAW FUNCTIONS ──
+// ── DRAW ONE PETAL (unfurling) ──
+function drawPetal(cx,cy,angle,len,wid,col,alpha,t) {
+  if (t<=0||alpha<=0) return;
+  const scaleY = easeOutElastic(clamp(t,0,1));
+  ctx.save();
+  ctx.globalAlpha = clamp(alpha,0,1);
+  ctx.translate(cx,cy); ctx.rotate(angle);
+  ctx.scale(1, scaleY);
+  ctx.fillStyle=col; ctx.shadowBlur=7; ctx.shadowColor=col;
+  ctx.beginPath();
+  ctx.moveTo(0,0);
+  ctx.bezierCurveTo(-wid*0.6,-len*0.3,-wid*0.5,-len*0.85,0,-len);
+  ctx.bezierCurveTo( wid*0.5,-len*0.85, wid*0.6,-len*0.3,0,0);
+  ctx.fill();
+  ctx.restore();
+}
 
-  function drawStem(x1,y1,x2,y2, col, w) {
-    ctx.save();
-    ctx.strokeStyle = col;
-    ctx.lineWidth   = w;
-    ctx.lineCap     = 'round';
-    ctx.beginPath();
-    ctx.moveTo(x1,y1);
-    ctx.quadraticCurveTo((x1+x2)/2 + (Math.random()*4-2), (y1+y2)/2, x2, y2);
-    ctx.stroke();
-    ctx.restore();
-  }
+// ── RIBBON ──
+function drawRibbon(t) {
+  if (t<=0) return;
+  ctx.save();
+  ctx.globalAlpha = clamp(t*2,0,1);
+  ctx.fillStyle='#ffb3c6'; ctx.shadowBlur=8; ctx.shadowColor='#ff85a1';
+  ctx.beginPath();
+  ctx.moveTo(118,328); ctx.quadraticCurveTo(170,315,202,328);
+  ctx.quadraticCurveTo(196,343,170,346); ctx.quadraticCurveTo(124,343,118,328);
+  ctx.fill();
+  ctx.strokeStyle='#e8638c'; ctx.lineWidth=1.5; ctx.globalAlpha=clamp(t*2,0,1)*0.6;
+  ctx.beginPath(); ctx.moveTo(128,325); ctx.quadraticCurveTo(170,317,192,325); ctx.stroke();
+  ctx.restore();
+}
 
-  function drawLeaf(x, y, angle, size, col) {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    ctx.fillStyle = col;
-    ctx.shadowBlur = 4; ctx.shadowColor = col;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.bezierCurveTo(-size*0.5, -size*0.4, -size*0.3, -size, 0, -size*1.1);
-    ctx.bezierCurveTo( size*0.3, -size,  size*0.5, -size*0.4, 0, 0);
-    ctx.fill();
-    ctx.restore();
-  }
+// ── FLOWER CENTERS ──
+function drawCenter(cx,cy,r,col1,col2,t) {
+  if (t<=0) return;
+  const cr = r * easeOutCubic(clamp(t,0,1));
+  ctx.save();
+  const g = ctx.createRadialGradient(cx-cr*0.2,cy-cr*0.2,cr*0.1,cx,cy,cr);
+  g.addColorStop(0,col1); g.addColorStop(1,col2);
+  ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
+  ctx.fillStyle=g; ctx.shadowBlur=8; ctx.shadowColor=col1; ctx.fill();
+  ctx.restore();
+}
 
-  function drawPetal(cx, cy, angle, length, width, col, alpha, scaleY) {
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.translate(cx, cy);
-    ctx.rotate(angle);
-    ctx.scale(1, scaleY); // scaleY 0→1 = unfurl from closed to open
-    ctx.fillStyle = col;
-    ctx.shadowBlur = 6; ctx.shadowColor = col;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.bezierCurveTo(-width*0.6, -length*0.3, -width*0.5, -length*0.8, 0, -length);
-    ctx.bezierCurveTo( width*0.5, -length*0.8,  width*0.6, -length*0.3, 0, 0);
-    ctx.fill();
-    ctx.restore();
-  }
+// ══════════════════════════════
+//  TIMELINE  (all values 0→1 of total animation)
+//  Total duration: 5000ms
+// ══════════════════════════════
+const TOTAL = 5000;
+let startTime = null;
+let breatheT  = 0;
 
-  function drawRose(f, t) {
-    const {cx,cy,petals,innerPetals,col1,col2,colI,ctr1,ctr2,size} = f;
-    const s = size * easeOutElastic(Math.min(t * 1.1, 1));
-    const breath = 1 + Math.sin(f._b||0) * 0.018;
+// Each flower has: stemStart, stemEnd, leafStart, leafEnd, petalStart, petalEnd
+const flowers = [
+  // center rose
+  { cx:170,cy:200, stemX1:170,stemY1:375,stemX2:170,stemY2:215,
+    stemCol:'#5a9e50', stemW:5,
+    leaves:[
+      {x:148,y:298,a:-0.5,s:22,col:'#81c784'},
+      {x:192,y:288,a: 0.5,s:20,col:'#81c784'},
+    ],
+    petals:7, innerPetals:5,
+    col1:'#ff85a1',col2:'#ff6b9d',colI:'#ffb3c6',
+    ctr1:'#ffe599',ctr2:'#ffb347', ctrR:14,
+    petalLen:28, petalWid:14, innerLen:16, innerWid:9,
+    type:'rose',
+    tStem:[0, 0.28], tLeaf:[0.22,0.42], tPetal:[0.38,0.72], tCenter:[0.55,0.75],
+  },
+  // left daisy — purple
+  { cx:105,cy:215, stemX1:168,stemY1:368,stemX2:105,stemY2:228,
+    stemCol:'#6abf69', stemW:4,
+    leaves:[{x:138,y:315,a:-0.6,s:18,col:'#66bb6a'}],
+    petals:9, col1:'#c9b1ff',col2:'#b39ddb',
+    ctr1:'#fff176',ctr2:'#ffb347', ctrR:11,
+    petalLen:22, petalWid:9,
+    type:'daisy',
+    tStem:[0.05,0.32], tLeaf:[0.28,0.46], tPetal:[0.42,0.72], tCenter:[0.58,0.76],
+  },
+  // right sunflower
+  { cx:235,cy:215, stemX1:172,stemY1:368,stemX2:235,stemY2:228,
+    stemCol:'#6abf69', stemW:4,
+    leaves:[{x:188,y:310,a:0.6,s:18,col:'#66bb6a'}],
+    petals:8, col1:'#ffd166',col2:'#ffb347',
+    ctr1:'#a0522d',ctr2:'#5d3a00', ctrR:14,
+    petalLen:24, petalWid:10,
+    type:'sunflower',
+    tStem:[0.08,0.35], tLeaf:[0.30,0.48], tPetal:[0.44,0.74], tCenter:[0.60,0.78],
+  },
+  // far left tulip
+  { cx:62,cy:228, stemX1:166,stemY1:362,stemX2:62,stemY2:242,
+    stemCol:'#81c784', stemW:3.5,
+    leaves:[],
+    col1:'#fff0f6',col2:'#ffd6e8',col3:'#ffb3c6',
+    type:'tulip',
+    tStem:[0.12,0.40], tLeaf:[0,0], tPetal:[0.48,0.76], tCenter:[0,0],
+  },
+  // far right poppy
+  { cx:258,cy:225, stemX1:174,stemY1:362,stemX2:258,stemY2:238,
+    stemCol:'#81c784', stemW:3.5,
+    leaves:[],
+    petals:4, col1:'#ff4757',col2:'#ff6b81',
+    ctr1:'#555',ctr2:'#1a1a1a', ctrR:10,
+    petalLen:22, petalWid:13,
+    type:'poppy',
+    tStem:[0.14,0.42], tLeaf:[0,0], tPetal:[0.50,0.78], tCenter:[0.64,0.80],
+  },
+  // baby's breath left
+  { cx:135,cy:185, stemX1:169,stemY1:360,stemX2:135,stemY2:195,
+    stemCol:'#81c784', stemW:2.5,
+    leaves:[],
+    col1:'#ffb3c6',col2:'#ffc8dd',
+    type:'babysbreath',
+    tStem:[0.18,0.44], tLeaf:[0,0], tPetal:[0.52,0.78], tCenter:[0,0],
+  },
+  // lavender right
+  { cx:200,cy:183, stemX1:171,stemY1:360,stemX2:200,stemY2:193,
+    stemCol:'#81c784', stemW:2.5,
+    leaves:[],
+    col1:'#e1bee7',col2:'#ce93d8',
+    type:'lavender',
+    tStem:[0.20,0.46], tLeaf:[0,0], tPetal:[0.54,0.80], tCenter:[0,0],
+  },
+];
 
-    // outer petals unfurl
-    for (let i = 0; i < petals; i++) {
-      const angle  = (i / petals) * Math.PI * 2;
-      const scaleY = easeOutCubic(Math.min(t * 1.3, 1));
-      const col    = i % 2 === 0 ? col1 : col2;
-      drawPetal(cx, cy, angle, 28*s*breath, 14*s, col, Math.min(t*2,1), scaleY);
+function render(ts) {
+  if (!startTime) startTime = ts;
+  const t = clamp((ts - startTime) / TOTAL, 0, 1); // global 0→1
+  breatheT += 0.016;
+
+  ctx.clearRect(0,0,W,H);
+
+  // ribbon appears early
+  drawRibbon(prog(t, 0, 0.15));
+
+  flowers.forEach(f => {
+    const breath = 1 + Math.sin(breatheT + flowers.indexOf(f)*0.9) * 0.015;
+
+    // 1. STEM GROWS
+    const tStem = easeOutCubic(prog(t, f.tStem[0], f.tStem[1]));
+    drawGrowingStem(f.stemX1,f.stemY1,f.stemX2,f.stemY2, tStem, f.stemCol, f.stemW);
+
+    // 2. LEAVES SPROUT (only after stem is mostly grown)
+    if (f.leaves && f.leaves.length) {
+      const tLeaf = prog(t, f.tLeaf[0], f.tLeaf[1]);
+      f.leaves.forEach((l,i) => {
+        const lt = clamp(tLeaf - i*0.15, 0, 1);
+        drawLeaf(l.x, l.y, l.a, l.s, lt, l.col);
+      });
     }
-    // inner petals
-    for (let i = 0; i < innerPetals; i++) {
-      const angle  = (i / innerPetals) * Math.PI * 2 + 0.3;
-      const scaleY = easeOutCubic(Math.min((t - 0.2) * 1.5, 1));
-      if (scaleY <= 0) continue;
-      drawPetal(cx, cy, angle, 16*s*breath, 9*s, colI, Math.min((t-0.1)*3,1), scaleY);
-    }
-    // center
-    const cr = 14 * s * easeOutCubic(Math.min(t*2,1));
-    ctx.save();
-    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
-    const g = ctx.createRadialGradient(cx-cr*0.2,cy-cr*0.2,cr*0.1,cx,cy,cr);
-    g.addColorStop(0,'#ffe599'); g.addColorStop(1,ctr2);
-    ctx.fillStyle = g; ctx.shadowBlur=8; ctx.shadowColor=ctr1;
-    ctx.fill(); ctx.restore();
-    // pollen dots
-    if (t > 0.7) {
-      const dotAlpha = (t - 0.7) / 0.3;
-      [[-3,-3],[3,-3],[0,3],[-5,1],[5,1]].forEach(([dx,dy]) => {
-        ctx.save(); ctx.globalAlpha = dotAlpha;
-        ctx.fillStyle = '#e8638c';
-        ctx.beginPath(); ctx.arc(cx+dx*s, cy+dy*s, 1.8*s, 0, Math.PI*2); ctx.fill();
+
+    // 3. PETALS BLOSSOM (only after stem reaches top)
+    const tPetal = prog(t, f.tPetal[0], f.tPetal[1]);
+    if (tPetal <= 0) return;
+
+    const s = breath;
+
+    if (f.type === 'rose') {
+      for (let i=0; i<f.petals; i++) {
+        const angle = (i/f.petals)*Math.PI*2;
+        const pt = clamp(tPetal - i*0.06, 0, 1);
+        drawPetal(f.cx,f.cy,angle,f.petalLen*s,f.petalWid*s, i%2===0?f.col1:f.col2, pt*0.95, pt);
+      }
+      for (let i=0; i<f.innerPetals; i++) {
+        const angle = (i/f.innerPetals)*Math.PI*2+0.3;
+        const pt = clamp(tPetal - 0.3 - i*0.05, 0, 1);
+        drawPetal(f.cx,f.cy,angle,f.innerLen*s,f.innerWid*s, f.colI, pt*0.95, pt);
+      }
+      drawCenter(f.cx,f.cy,f.ctrR*s,f.ctr1,f.ctr2, prog(t,f.tCenter[0],f.tCenter[1]));
+      // pollen dots
+      const dotT = prog(t,f.tCenter[0]+0.05,f.tCenter[1]+0.1);
+      if (dotT>0) {
+        [[-3,-3],[3,-3],[0,3],[-5,1],[5,1]].forEach(([dx,dy])=>{
+          ctx.save(); ctx.globalAlpha=dotT*0.85; ctx.fillStyle='#e8638c';
+          ctx.beginPath(); ctx.arc(f.cx+dx*s,f.cy+dy*s,1.8*s,0,Math.PI*2); ctx.fill(); ctx.restore();
+        });
+      }
+
+    } else if (f.type==='daisy'||f.type==='sunflower'||f.type==='poppy') {
+      for (let i=0; i<f.petals; i++) {
+        const angle = (i/f.petals)*Math.PI*2;
+        const pt = clamp(tPetal - i*0.07, 0, 1);
+        drawPetal(f.cx,f.cy,angle,f.petalLen*s,f.petalWid*s, i%2===0?f.col1:f.col2, pt*0.95, pt);
+      }
+      drawCenter(f.cx,f.cy,f.ctrR*s,f.ctr1,f.ctr2, prog(t,f.tCenter[0],f.tCenter[1]));
+
+    } else if (f.type==='tulip') {
+      const alpha = clamp(tPetal*2,0,1);
+      ctx.save(); ctx.globalAlpha=alpha;
+      // center petal
+      ctx.fillStyle=f.col1; ctx.shadowBlur=6; ctx.shadowColor=f.col1;
+      ctx.save(); ctx.translate(f.cx,f.cy); ctx.scale(s, easeOutElastic(clamp(tPetal,0,1)));
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.bezierCurveTo(-14,-20,-12,-38,0,-42);
+      ctx.bezierCurveTo(12,-38,14,-20,0,0); ctx.fill(); ctx.restore();
+      // side petals
+      ctx.fillStyle=f.col2;
+      ctx.save(); ctx.translate(f.cx,f.cy); ctx.scale(s, easeOutElastic(clamp(tPetal-0.1,0,1)));
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.bezierCurveTo(-18,-15,-20,-35,-8,-40);
+      ctx.bezierCurveTo(-4,-30,-2,-10,0,0); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.translate(f.cx,f.cy); ctx.scale(s, easeOutElastic(clamp(tPetal-0.1,0,1)));
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.bezierCurveTo(18,-15,20,-35,8,-40);
+      ctx.bezierCurveTo(4,-30,2,-10,0,0); ctx.fill(); ctx.restore();
+      // inner
+      ctx.fillStyle=f.col3||f.col2; ctx.globalAlpha=alpha*0.7;
+      ctx.save(); ctx.translate(f.cx,f.cy); ctx.scale(s*0.7, easeOutElastic(clamp(tPetal-0.2,0,1))*0.7);
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.bezierCurveTo(-10,-10,-8,-30,0,-36);
+      ctx.bezierCurveTo(8,-30,10,-10,0,0); ctx.fill(); ctx.restore();
+      ctx.restore();
+
+    } else if (f.type==='babysbreath'||f.type==='lavender') {
+      const clusters=[{x:0,y:0,r:6},{x:-10,y:-5,r:5},{x:10,y:-5,r:5},{x:-5,y:8,r:4},{x:5,y:8,r:4}];
+      clusters.forEach((c,i)=>{
+        const pt = clamp(tPetal - i*0.1, 0, 1);
+        if (pt<=0) return;
+        ctx.save();
+        ctx.globalAlpha = easeOutCubic(pt);
+        ctx.fillStyle = i%2===0?f.col1:f.col2;
+        ctx.shadowBlur=5; ctx.shadowColor=f.col1;
+        const cs = easeOutElastic(pt);
+        ctx.beginPath(); ctx.arc(f.cx+c.x*s*cs, f.cy+c.y*s*cs, c.r*s*cs, 0, Math.PI*2); ctx.fill();
         ctx.restore();
       });
     }
-  }
-
-  function drawDaisy(f, t) {
-    const {cx,cy,petals,col1,col2,ctr1,ctr2,size} = f;
-    const s = size * easeOutElastic(Math.min(t*1.1,1));
-    const breath = 1 + Math.sin(f._b||0) * 0.015;
-    for (let i = 0; i < petals; i++) {
-      const angle  = (i / petals) * Math.PI * 2;
-      const scaleY = easeOutCubic(Math.min(t * 1.4, 1));
-      const col    = i % 2 === 0 ? col1 : col2;
-      drawPetal(cx, cy, angle, 22*s*breath, 9*s, col, Math.min(t*2,1), scaleY);
-    }
-    const cr = 11*s*easeOutCubic(Math.min(t*2,1));
-    ctx.save();
-    const g = ctx.createRadialGradient(cx,cy,0,cx,cy,cr);
-    g.addColorStop(0,'#fff176'); g.addColorStop(1,ctr2);
-    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
-    ctx.fillStyle=g; ctx.shadowBlur=6; ctx.shadowColor=ctr1; ctx.fill();
-    ctx.restore();
-  }
-
-  function drawSunflower(f, t) {
-    const {cx,cy,petals,col1,col2,ctr1,ctr2,size} = f;
-    const s = size * easeOutElastic(Math.min(t*1.1,1));
-    const breath = 1 + Math.sin(f._b||0) * 0.012;
-    for (let i = 0; i < petals; i++) {
-      const angle  = (i / petals) * Math.PI * 2;
-      const scaleY = easeOutCubic(Math.min(t*1.3,1));
-      const col    = i % 2 === 0 ? col1 : col2;
-      drawPetal(cx, cy, angle, 24*s*breath, 10*s, col, Math.min(t*2,1), scaleY);
-    }
-    const cr = 14*s*easeOutCubic(Math.min(t*2,1));
-    ctx.save();
-    const g = ctx.createRadialGradient(cx-cr*0.3,cy-cr*0.3,cr*0.1,cx,cy,cr);
-    g.addColorStop(0,'#a0522d'); g.addColorStop(1,ctr2);
-    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
-    ctx.fillStyle=g; ctx.shadowBlur=8; ctx.shadowColor='#8B4513'; ctx.fill();
-    ctx.restore();
-  }
-
-  function drawTulip(f, t) {
-    const {cx,cy,col1,col2,col3,size} = f;
-    const s = size * easeOutElastic(Math.min(t*1.1,1));
-    const scaleY = easeOutCubic(Math.min(t*1.2,1));
-    const alpha  = Math.min(t*2,1);
-    const breath = 1 + Math.sin(f._b||0) * 0.02;
-
-    ctx.save(); ctx.globalAlpha = alpha;
-    // center petal
-    ctx.fillStyle = col1; ctx.shadowBlur=6; ctx.shadowColor=col1;
-    ctx.save(); ctx.translate(cx,cy); ctx.scale(s*breath, s*scaleY);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.bezierCurveTo(-14,-20,-12,-38,0,-42);
-    ctx.bezierCurveTo(12,-38,14,-20,0,0);
-    ctx.fill(); ctx.restore();
-    // left petal
-    ctx.fillStyle = col2;
-    ctx.save(); ctx.translate(cx,cy); ctx.scale(s*breath, s*scaleY);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.bezierCurveTo(-18,-15,-20,-35,-8,-40);
-    ctx.bezierCurveTo(-4,-30,-2,-10,0,0);
-    ctx.fill(); ctx.restore();
-    // right petal
-    ctx.save(); ctx.translate(cx,cy); ctx.scale(s*breath, s*scaleY);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.bezierCurveTo(18,-15,20,-35,8,-40);
-    ctx.bezierCurveTo(4,-30,2,-10,0,0);
-    ctx.fill(); ctx.restore();
-    // inner
-    ctx.fillStyle = col3; ctx.globalAlpha = alpha * 0.7;
-    ctx.save(); ctx.translate(cx,cy); ctx.scale(s*breath*0.7, s*scaleY*0.7);
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.bezierCurveTo(-10,-10,-8,-30,0,-36);
-    ctx.bezierCurveTo(8,-30,10,-10,0,0);
-    ctx.fill(); ctx.restore();
-    ctx.restore();
-  }
-
-  function drawPoppy(f, t) {
-    const {cx,cy,petals,col1,col2,ctr1,ctr2,size} = f;
-    const s = size * easeOutElastic(Math.min(t*1.1,1));
-    const breath = 1 + Math.sin(f._b||0) * 0.018;
-    for (let i = 0; i < petals; i++) {
-      const angle  = (i / petals) * Math.PI * 2;
-      const scaleY = easeOutCubic(Math.min(t*1.3,1));
-      const col    = i % 2 === 0 ? col1 : col2;
-      drawPetal(cx, cy, angle, 22*s*breath, 13*s, col, Math.min(t*2,1), scaleY);
-    }
-    const cr = 10*s*easeOutCubic(Math.min(t*2,1));
-    ctx.save();
-    const g = ctx.createRadialGradient(cx,cy,0,cx,cy,cr);
-    g.addColorStop(0,'#555'); g.addColorStop(1,ctr2);
-    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
-    ctx.fillStyle=g; ctx.shadowBlur=4; ctx.shadowColor='#333'; ctx.fill();
-    ctx.restore();
-  }
-
-  function drawBabysBreath(f, t) {
-    const {cx,cy,col1,col2,size} = f;
-    const s = size * easeOutCubic(Math.min(t*1.2,1));
-    const alpha = Math.min(t*2,1);
-    const clusters = [{x:0,y:0,r:6},{x:-10,y:-5,r:5},{x:10,y:-5,r:5},{x:-5,y:8,r:4},{x:5,y:8,r:4}];
-    clusters.forEach((c,i) => {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = i%2===0 ? col1 : col2;
-      ctx.shadowBlur=5; ctx.shadowColor=col1;
-      ctx.beginPath(); ctx.arc(cx+c.x*s, cy+c.y*s, c.r*s, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
-    });
-  }
-
-  function drawLavender(f, t) {
-    const {cx,cy,col1,col2,size} = f;
-    const s = size * easeOutCubic(Math.min(t*1.2,1));
-    const alpha = Math.min(t*2,1);
-    const clusters = [{x:0,y:0,r:6},{x:-10,y:-5,r:5},{x:10,y:-5,r:5},{x:-5,y:8,r:4},{x:5,y:8,r:4}];
-    clusters.forEach((c,i) => {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = i%2===0 ? col1 : col2;
-      ctx.shadowBlur=5; ctx.shadowColor=col2;
-      ctx.beginPath(); ctx.arc(cx+c.x*s, cy+c.y*s, c.r*s, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
-    });
-  }
-
-  // ── STEMS & LEAVES (static, drawn once underneath) ──
-  function drawBase() {
-    // stems
-    const stems = [
-      {x1:170,y1:360,x2:170,y2:210, col:'#5a9e50', w:5},
-      {x1:168,y1:350,x2:105,y2:225, col:'#6abf69', w:4},
-      {x1:172,y1:350,x2:235,y2:225, col:'#6abf69', w:4},
-      {x1:166,y1:345,x2:62, y2:238, col:'#81c784', w:3.5},
-      {x1:174,y1:345,x2:258,y2:236, col:'#81c784', w:3.5},
-    ];
-    stems.forEach(s => {
-      ctx.save();
-      ctx.strokeStyle = s.col; ctx.lineWidth = s.w; ctx.lineCap = 'round';
-      ctx.shadowBlur=4; ctx.shadowColor=s.col;
-      ctx.beginPath(); ctx.moveTo(s.x1,s.y1);
-      ctx.quadraticCurveTo((s.x1+s.x2)/2, (s.y1+s.y2)/2, s.x2, s.y2);
-      ctx.stroke(); ctx.restore();
-    });
-    // leaves
-    drawLeaf(148,295,-0.5, 22,'#81c784');
-    drawLeaf(192,285, 0.5, 20,'#81c784');
-    drawLeaf(138,312,-0.6, 18,'#66bb6a');
-    drawLeaf(188,308, 0.6, 18,'#66bb6a');
-    // ribbon wrap
-    ctx.save();
-    ctx.fillStyle='#ffb3c6'; ctx.globalAlpha=0.92;
-    ctx.shadowBlur=8; ctx.shadowColor='#ff85a1';
-    ctx.beginPath();
-    ctx.moveTo(118,325); ctx.quadraticCurveTo(170,312,202,325);
-    ctx.quadraticCurveTo(196,340,170,343); ctx.quadraticCurveTo(124,340,118,325);
-    ctx.fill();
-    ctx.strokeStyle='#e8638c'; ctx.lineWidth=1.5; ctx.globalAlpha=0.6;
-    ctx.beginPath(); ctx.moveTo(128,322); ctx.quadraticCurveTo(170,314,192,322); ctx.stroke();
-    ctx.restore();
-  }
-
-  // ── ANIMATION LOOP ──
-  let breatheT = 0;
-
-  function render(ts) {
-    if (!startTime) startTime = ts;
-    const elapsed = ts - startTime;
-
-    ctx.clearRect(0, 0, W, H);
-    drawBase();
-
-    breatheT += 0.018;
-
-    flowers.forEach((f, i) => {
-      // bloom progress for this flower
-      const flowerElapsed = elapsed - f.delay * BLOOM_DUR;
-      const t = Math.max(0, Math.min(flowerElapsed / BLOOM_DUR, 1));
-      bloom[i] = t;
-      f._b = breatheT + i * 0.8; // offset breathing per flower
-
-      if (t <= 0) return;
-
-      switch(f.type) {
-        case 'rose':        drawRose(f, t);        break;
-        case 'daisy':       drawDaisy(f, t);       break;
-        case 'sunflower':   drawSunflower(f, t);   break;
-        case 'tulip':       drawTulip(f, t);       break;
-        case 'poppy':       drawPoppy(f, t);       break;
-        case 'babysbreath': drawBabysBreath(f, t); break;
-        case 'lavender':    drawLavender(f, t);    break;
-      }
-    });
-
-    requestAnimationFrame(render);
-  }
+  });
 
   requestAnimationFrame(render);
+}
 
-  // ── FALLING PETALS ──
-  const petalContainer = document.getElementById('petals');
-  for (let i = 0; i < 28; i++) {
-    const p = document.createElement('div');
-    p.className = 'petal';
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.animationDuration = (4 + Math.random() * 6) + 's';
-    p.style.animationDelay = (Math.random() * 10) + 's';
-    p.style.width = (8 + Math.random() * 12) + 'px';
-    p.style.height = (12 + Math.random() * 14) + 'px';
-    petalContainer.appendChild(p);
-  }
+requestAnimationFrame(render);
 
-  // ── SPARKLES ──
-  const sparkleEmojis = ['✨','💫','🌟','✦'];
-  for (let i = 0; i < 16; i++) {
-    const s = document.createElement('div');
-    s.className = 'sparkle';
-    s.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
-    s.style.left = Math.random() * 100 + 'vw';
-    s.style.top  = (10 + Math.random() * 80) + 'vh';
-    s.style.animationDuration = (3 + Math.random() * 5) + 's';
-    s.style.animationDelay    = (Math.random() * 8) + 's';
-    document.body.appendChild(s);
-  }
+// ── FALLING PETALS ──
+const petalContainer = document.getElementById('petals');
+for (let i=0;i<28;i++){
+  const p=document.createElement('div'); p.className='petal';
+  p.style.left=Math.random()*100+'vw';
+  p.style.animationDuration=(4+Math.random()*6)+'s';
+  p.style.animationDelay=(Math.random()*10)+'s';
+  p.style.width=(8+Math.random()*12)+'px';
+  p.style.height=(12+Math.random()*14)+'px';
+  petalContainer.appendChild(p);
+}
 
-  // ── FLOATING HEARTS ──
-  const wrap = document.getElementById('bouquetWrap');
-  const heartEmojis = ['💕','💗','💖','🌸','💓'];
-  function spawnHeart() {
-    const h = document.createElement('div');
-    h.className = 'float-heart';
-    h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-    h.style.left = (20 + Math.random() * 300) + 'px';
-    h.style.bottom = (60 + Math.random() * 120) + 'px';
-    h.style.animationDuration = (2 + Math.random() * 2) + 's';
-    h.style.animationDelay = '0s';
-    wrap.appendChild(h);
-    setTimeout(() => h.remove(), 4000);
-  }
-  setInterval(spawnHeart, 700);
+// ── SPARKLES ──
+const sparkleEmojis=['✨','💫','🌟','✦'];
+for(let i=0;i<16;i++){
+  const s=document.createElement('div'); s.className='sparkle';
+  s.textContent=sparkleEmojis[Math.floor(Math.random()*sparkleEmojis.length)];
+  s.style.left=Math.random()*100+'vw';
+  s.style.top=(10+Math.random()*80)+'vh';
+  s.style.animationDuration=(3+Math.random()*5)+'s';
+  s.style.animationDelay=(Math.random()*8)+'s';
+  document.body.appendChild(s);
+}
 
-  // ── POLLEN DUST ──
-  const pollenColors = ['#ffd166','#ffb347','#ff85a1','#c9b1ff'];
-  function spawnPollen() {
-    const p = document.createElement('div');
-    p.className = 'pollen';
-    const size = 3 + Math.random() * 5;
-    p.style.width  = size + 'px';
-    p.style.height = size + 'px';
-    p.style.background = pollenColors[Math.floor(Math.random() * pollenColors.length)];
-    p.style.left = (80 + Math.random() * 180) + 'px';
-    p.style.top  = (100 + Math.random() * 160) + 'px';
-    p.style.animationDuration = (2 + Math.random() * 3) + 's';
-    p.style.animationDelay    = (Math.random() * 2) + 's';
-    wrap.appendChild(p);
-    setTimeout(() => p.remove(), 5000);
-  }
-  setInterval(spawnPollen, 400);
-  </script>
+// ── FLOATING HEARTS ──
+const wrap=document.getElementById('bouquetWrap');
+const heartEmojis=['💕','💗','💖','🌸','💓'];
+function spawnHeart(){
+  const h=document.createElement('div'); h.className='float-heart';
+  h.textContent=heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+  h.style.left=(20+Math.random()*300)+'px';
+  h.style.bottom=(60+Math.random()*120)+'px';
+  h.style.animationDuration=(2+Math.random()*2)+'s';
+  h.style.animationDelay='0s';
+  wrap.appendChild(h);
+  setTimeout(()=>h.remove(),4000);
+}
+setInterval(spawnHeart,700);
+
+// ── POLLEN ──
+const pollenColors=['#ffd166','#ffb347','#ff85a1','#c9b1ff'];
+function spawnPollen(){
+  const p=document.createElement('div'); p.className='pollen';
+  const size=3+Math.random()*5;
+  p.style.width=size+'px'; p.style.height=size+'px';
+  p.style.background=pollenColors[Math.floor(Math.random()*pollenColors.length)];
+  p.style.left=(60+Math.random()*220)+'px';
+  p.style.top=(80+Math.random()*180)+'px';
+  p.style.animationDuration=(2+Math.random()*3)+'s';
+  p.style.animationDelay=(Math.random()*2)+'s';
+  wrap.appendChild(p);
+  setTimeout(()=>p.remove(),5000);
+}
+setInterval(spawnPollen,350);
+</script>
 </body>
 </html>
