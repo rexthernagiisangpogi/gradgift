@@ -683,7 +683,7 @@ function anim(){
 for( var i = 0; i < opts.strings.length; ++i ){
   for( var j = 0; j < opts.strings[ i ].length; ++j ){
     letters.push( new Letter( opts.strings[ i ][ j ], 
-                            j * opts.charSpacing + opts.charSpacing / 2 - opts.strings[ i ].length * opts.charSize / 2,
+                            j * opts.charSpacing + opts.charSpacing / 2 - opts.strings[ i ].length * opts.charSpacing / 2,
                             i * opts.lineHeight + opts.lineHeight / 2 - opts.strings.length * opts.lineHeight / 2 ) );
   }
 }
