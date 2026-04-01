@@ -599,49 +599,49 @@ function anim(){
   ctx.fillStyle = gradient;
   ctx.fillRect( 0, 0, w, h );
   
+  ctx.translate( hw, hh );
+
   if (Math.random() < 0.5) sparkles.push(new Sparkle());
   if (Math.random() < 0.35) hearts.push(new Heart());
   if (Math.random() < 0.4) stars.push(new Star());
   if (Math.random() < 0.25) ribbons.push(new Ribbon(Math.random() * w - hw, -hh));
-  
+
   for (var i = sparkles.length - 1; i >= 0; i--) {
     sparkles[i].step();
     sparkles[i].draw();
     if (sparkles[i].life <= 0) sparkles.splice(i, 1);
   }
-  
+
   for (var i = hearts.length - 1; i >= 0; i--) {
     hearts[i].step();
     hearts[i].draw();
     if (hearts[i].life <= 0) hearts.splice(i, 1);
   }
-  
+
   for (var i = stars.length - 1; i >= 0; i--) {
     stars[i].step();
     stars[i].draw();
     if (stars[i].life <= 0) stars.splice(i, 1);
   }
-  
+
   for (var i = ribbons.length - 1; i >= 0; i--) {
     ribbons[i].step();
     ribbons[i].draw();
     if (ribbons[i].life <= 0) ribbons.splice(i, 1);
   }
-  
+
   for (var i = confetti.length - 1; i >= 0; i--) {
     confetti[i].step();
     confetti[i].draw();
     if (confetti[i].life <= 0) confetti.splice(i, 1);
   }
-  
-  ctx.translate( hw, hh );
-  
+
   var done = true;
   for( var l = 0; l < letters.length; ++l ){
     letters[ l ].step();
     if( letters[ l ].phase !== 'done' ) done = false;
   }
-  
+
   ctx.translate( -hw, -hh );
   
   if( done ) {
