@@ -1,42 +1,43 @@
 *,*::after,*::before{padding:0;margin:0;box-sizing:border-box;}
-:root{--dark-color:#000;}
-body{display:flex;align-items:flex-end;justify-content:center;min-height:100vh;background-color:var(--dark-color);overflow:hidden;perspective:1000px;}
-.night{position:fixed;left:50%;top:0;transform:translateX(-50%);width:100%;height:100%;filter:blur(0.1vmin);background-image:radial-gradient(ellipse at top,transparent 0%,var(--dark-color)),radial-gradient(ellipse at bottom,var(--dark-color),rgba(145,233,255,0.2)),repeating-linear-gradient(220deg,rgb(0,0,0) 0px,rgb(0,0,0) 19px,transparent 19px,transparent 22px),repeating-linear-gradient(189deg,rgb(0,0,0) 0px,rgb(0,0,0) 19px,transparent 19px,transparent 22px),repeating-linear-gradient(148deg,rgb(0,0,0) 0px,rgb(0,0,0) 19px,transparent 19px,transparent 22px),linear-gradient(90deg,rgb(0,255,250),rgb(240,240,240));}
-.flowers{position:relative;transform:scale(0.9);}
-.flower{position:absolute;bottom:10vmin;transform-origin:bottom center;z-index:10;--fl-speed:0.8s;}
-.flower--1{left:-55vmin;animation:moving-flower-1 4s linear infinite;}
-.flower--1 .flower__line{height:70vmin;animation-delay:0.3s;}
+:root{--dark-color:#fff0f5;}
+body{margin:0;overflow:hidden;}
+.night{display:none;}
+.flowers{position:relative;}
+.flower{position:absolute;bottom:0;transform-origin:bottom center;z-index:10;--fl-speed:0.8s;}
+/* Bouquet positioning - grouped closer together */
+.flower--1{left:120px;transform:rotate(-15deg);animation:moving-flower-1 4s linear infinite;}
+.flower--1 .flower__line{height:65vmin;animation-delay:0.3s;}
 .flower--1 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 1.6s backwards;}
 .flower--1 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 1.4s backwards;}
 .flower--1 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.2s backwards;}
 .flower--1 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1s backwards;}
 .flower--1 .flower__line__leaf--5{animation:blooming-leaf-right var(--fl-speed) 1.8s backwards;}
 .flower--1 .flower__line__leaf--6{animation:blooming-leaf-left var(--fl-speed) 2s backwards;}
-.flower--2{left:-30vmin;transform:rotate(12deg);animation:moving-flower-2 4s linear infinite;}
-.flower--2 .flower__line{height:60vmin;animation-delay:0.6s;}
+.flower--2{left:160px;transform:rotate(-8deg);animation:moving-flower-2 4s linear infinite;}
+.flower--2 .flower__line{height:68vmin;animation-delay:0.6s;}
 .flower--2 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 1.9s backwards;}
 .flower--2 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 1.7s backwards;}
 .flower--2 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.5s backwards;}
 .flower--2 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.3s backwards;}
-.flower--3{left:-5vmin;transform:rotate(-10deg);animation:moving-flower-3 4s linear infinite;}
-.flower--3 .flower__line{height:65vmin;animation-delay:0.9s;}
+.flower--3{left:200px;transform:rotate(0deg);animation:moving-flower-3 4s linear infinite;}
+.flower--3 .flower__line{height:70vmin;animation-delay:0.9s;}
 .flower--3 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2.5s backwards;}
 .flower--3 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 2.3s backwards;}
 .flower--3 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 2.1s backwards;}
 .flower--3 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.9s backwards;}
-.flower--4{left:20vmin;transform:rotate(8deg);animation:moving-flower-2 4s linear infinite;}
-.flower--4 .flower__line{height:68vmin;animation-delay:0.5s;}
+.flower--4{left:240px;transform:rotate(8deg);animation:moving-flower-2 4s linear infinite;}
+.flower--4 .flower__line{height:67vmin;animation-delay:0.5s;}
 .flower--4 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2s backwards;}
 .flower--4 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 1.8s backwards;}
 .flower--4 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.6s backwards;}
 .flower--4 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.4s backwards;}
-.flower--5{left:42vmin;transform:rotate(-12deg);animation:moving-flower-1 4s linear infinite;}
-.flower--5 .flower__line{height:58vmin;animation-delay:0.7s;}
+.flower--5{left:280px;transform:rotate(15deg);animation:moving-flower-1 4s linear infinite;}
+.flower--5 .flower__line{height:64vmin;animation-delay:0.7s;}
 .flower--5 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2.2s backwards;}
 .flower--5 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 2s backwards;}
 .flower--5 .flower__line__leaf--3{animation:blooming-leaf-left var(--fl-speed) 1.8s backwards;}
 .flower--5 .flower__line__leaf--4{animation:blooming-leaf-left var(--fl-speed) 1.6s backwards;}
-.flower--6{left:62vmin;transform:rotate(5deg);animation:moving-flower-3 4s linear infinite;}
+.flower--6{left:320px;transform:rotate(20deg);animation:moving-flower-3 4s linear infinite;}
 .flower--6 .flower__line{height:62vmin;animation-delay:1s;}
 .flower--6 .flower__line__leaf--1{animation:blooming-leaf-right var(--fl-speed) 2.4s backwards;}
 .flower--6 .flower__line__leaf--2{animation:blooming-leaf-right var(--fl-speed) 2.2s backwards;}
@@ -101,8 +102,8 @@ body{display:flex;align-items:flex-end;justify-content:center;min-height:100vh;b
 .flower__leafs--6::after{background-color:#ff9a6c;}
 .flower__white-circle{position:absolute;left:-3.5vmin;top:-3vmin;width:9vmin;height:4vmin;border-radius:50%;background-color:#fff;}
 .flower__white-circle::after{content:"";position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:60%;height:60%;border-radius:inherit;background-image:linear-gradient(90deg,rgb(255,235,18),rgb(255,206,0));}
-.flower__line{height:55vmin;width:1.5vmin;background-image:linear-gradient(to left,rgb(0,0,0,0.2),transparent,rgba(255,255,255,0.2)),linear-gradient(to top,transparent 10%,#14757a,#39c6d6);box-shadow:inset 0 0 2px rgba(0,0,0,0.5);animation:grow-flower-tree 4s backwards;}
-.flower__line__leaf{--w:7vmin;--h:calc(var(--w) + 2vmin);position:absolute;top:20%;left:90%;width:var(--w);height:var(--h);border-top-right-radius:var(--h);border-bottom-left-radius:var(--h);background-image:linear-gradient(to top,rgba(20,117,122,0.4),#39c6d6);}
+.flower__line{height:55vmin;width:1.5vmin;background-image:linear-gradient(to left,rgba(0,0,0,0.1),transparent,rgba(255,255,255,0.2)),linear-gradient(to top,transparent 10%,#4a9e4a,#6abf6a);box-shadow:inset 0 0 2px rgba(0,0,0,0.2);animation:grow-flower-tree 4s backwards;}
+.flower__line__leaf{--w:7vmin;--h:calc(var(--w) + 2vmin);position:absolute;top:20%;left:90%;width:var(--w);height:var(--h);border-top-right-radius:var(--h);border-bottom-left-radius:var(--h);background-image:linear-gradient(to top,rgba(60,140,60,0.5),#6abf6a);}
 .flower__line__leaf--1{transform:rotate(70deg) rotateY(30deg);}
 .flower__line__leaf--2{top:45%;transform:rotate(70deg) rotateY(30deg);}
 .flower__line__leaf--3,.flower__line__leaf--4,.flower__line__leaf--6{border-top-right-radius:0;border-bottom-left-radius:0;border-top-left-radius:var(--h);border-bottom-right-radius:var(--h);left:-460%;top:12%;transform:rotate(-70deg) rotateY(30deg);}
